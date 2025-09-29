@@ -53,13 +53,6 @@
       "NODE_ENV": "production"
     }
   },
-  "functions": {
-    "fhir-iq-prior-auth/implementation/dist/src/app.js": {
-      "runtime": "nodejs18.x",
-      "maxDuration": 30,
-      "memory": 1024
-    }
-  },
   "regions": ["iad1"],
   "public": false,
   "github": {
