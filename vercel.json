@@ -1,0 +1,69 @@
+{
+  "version": 2,
+  "name": "fhir-iq-pas",
+  "builds": [
+    {
+      "src": "fhir-iq-prior-auth/implementation/package.json",
+      "use": "@vercel/node",
+      "config": {
+        "includeFiles": [
+          "fhir-iq-prior-auth/implementation/dist/**",
+          "fhir-iq-prior-auth/implementation/src/**",
+          "fhir-iq-prior-auth/specs/**"
+        ]
+      }
+    }
+  ],
+  "routes": [
+    {
+      "src": "/fhir/(.*)",
+      "dest": "/fhir-iq-prior-auth/implementation/dist/src/app.js"
+    },
+    {
+      "src": "/cds-services/(.*)",
+      "dest": "/fhir-iq-prior-auth/implementation/dist/src/app.js"
+    },
+    {
+      "src": "/dtr-launch",
+      "dest": "/fhir-iq-prior-auth/implementation/dist/src/app.js"
+    },
+    {
+      "src": "/dtr-submit",
+      "dest": "/fhir-iq-prior-auth/implementation/dist/src/app.js"
+    },
+    {
+      "src": "/.well-known/(.*)",
+      "dest": "/fhir-iq-prior-auth/implementation/dist/src/app.js"
+    },
+    {
+      "src": "/health",
+      "dest": "/fhir-iq-prior-auth/implementation/dist/src/app.js"
+    },
+    {
+      "src": "/",
+      "dest": "/fhir-iq-prior-auth/implementation/dist/src/app.js"
+    }
+  ],
+  "env": {
+    "NODE_ENV": "production",
+    "FHIR_VERSION": "4.0.1"
+  },
+  "build": {
+    "env": {
+      "NODE_ENV": "production"
+    }
+  },
+  "functions": {
+    "fhir-iq-prior-auth/implementation/dist/src/app.js": {
+      "runtime": "nodejs18.x",
+      "maxDuration": 30,
+      "memory": 1024
+    }
+  },
+  "regions": ["iad1"],
+  "public": false,
+  "github": {
+    "enabled": true,
+    "autoAlias": true
+  }
+}

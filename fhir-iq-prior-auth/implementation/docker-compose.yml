@@ -1,0 +1,225 @@
+version: '3.8'
+
+services:
+  # PostgreSQL Database for HAPI FHIR
+  postgres:
+    image: postgres:15-alpine
+    container_name: fpas-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: fhir
+      POSTGRES_USER: fhir_user
+      POSTGRES_PASSWORD: fhir_pass
+      POSTGRES_INITDB_ARGS: "--encoding=UTF8 --lc-collate=C --lc-ctype=C"
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./docker/postgres/init.sql:/docker-entrypoint-initdb.d/init.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U fhir_user -d fhir"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Redis for Queue Management and Caching
+  redis:
+    image: redis:7-alpine
+    container_name: fpas-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    command: redis-server --appendonly yes --requirepass redis_pass
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "--raw", "incr", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+
+  # HAPI FHIR Server
+  fhir-server:
+    image: hapiproject/hapi:v6.8.0
+    container_name: fpas-fhir-server
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    environment:
+      # Database Configuration
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/fhir
+      SPRING_DATASOURCE_USERNAME: fhir_user
+      SPRING_DATASOURCE_PASSWORD: fhir_pass
+      SPRING_DATASOURCE_DRIVER_CLASS_NAME: org.postgresql.Driver
+
+      # HAPI FHIR Configuration
+      HAPI_FHIR_FHIR_VERSION: R4
+      HAPI_FHIR_VALIDATION_REQUESTS_ENABLED: true
+      HAPI_FHIR_OPENAPI_ENABLED: true
+      HAPI_FHIR_CORS_ENABLED: true
+      HAPI_FHIR_CORS_ALLOWED_ORIGIN: "*"
+
+      # Performance Settings
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+      SPRING_JPA_HIBERNATE_SHOW_SQL: false
+      SPRING_JPA_PROPERTIES_HIBERNATE_DIALECT: org.hibernate.dialect.PostgreSQLDialect
+      SPRING_JPA_PROPERTIES_HIBERNATE_SEARCH_BACKEND_LUCENE_ANALYSIS_CONFIGURER: ca.uhn.fhir.jpa.search.HapiLuceneAnalysisConfigurer
+
+      # Security Settings
+      HAPI_FHIR_SERVER_ADDRESS: http://localhost:8080/fhir
+      HAPI_FHIR_ENABLE_INDEX_MISSING_FIELDS: true
+      HAPI_FHIR_AUTO_CREATE_PLACEHOLDER_REFERENCE_TARGETS: true
+
+      # Implementation Guide Support
+      HAPI_FHIR_IG_RUNTIME_UPLOAD_ENABLED: true
+    depends_on:
+      postgres:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/fhir/metadata"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+
+  # Mock OAuth2 Provider
+  oauth-mock:
+    image: ghcr.io/navikt/mock-oauth2-server:0.5.8
+    container_name: fpas-oauth-mock
+    restart: unless-stopped
+    ports:
+      - "9000:9000"
+    environment:
+      JSON_CONFIG: |
+        {
+          "interactiveLogin": true,
+          "httpServer": "NettyWrapper",
+          "tokenCallbacks": [
+            {
+              "issuerId": "fhir-iq-issuer",
+              "tokenExpiry": 3600,
+              "requestMappings": [
+                {
+                  "requestParam": "scope",
+                  "match": "user/.*\\.read",
+                  "claims": {
+                    "scope": "user/Claim.read user/ClaimResponse.read user/Questionnaire.read",
+                    "aud": "fhir-iq-pas",
+                    "organization": "1234567890",
+                    "purpose_of_use": "TREAT"
+                  }
+                },
+                {
+                  "requestParam": "scope",
+                  "match": "system/.*\\.write",
+                  "claims": {
+                    "scope": "system/Claim.write system/ClaimResponse.read system/Task.read",
+                    "aud": "fhir-iq-pas",
+                    "organization": "1234567890",
+                    "purpose_of_use": "PAYMGT"
+                  }
+                },
+                {
+                  "requestParam": "scope",
+                  "match": "patient/.*\\.read",
+                  "claims": {
+                    "scope": "patient/Claim.read patient/ClaimResponse.read",
+                    "aud": "fhir-iq-pas",
+                    "patient": "Patient/patient-example"
+                  }
+                }
+              ]
+            }
+          ]
+        }
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9000/fhir-iq-issuer/.well-known/openid_configuration"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+  # API Gateway (Node.js/TypeScript)
+  api-gateway:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: fpas-api-gateway
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      NODE_ENV: development
+      PORT: 3000
+
+      # FHIR Server Configuration
+      FHIR_BASE_URL: http://fhir-server:8080/fhir
+
+      # Database Configuration
+      DATABASE_URL: postgresql://fhir_user:fhir_pass@postgres:5432/fhir
+
+      # Redis Configuration
+      REDIS_URL: redis://:redis_pass@redis:6379
+
+      # OAuth Configuration
+      OAUTH_ISSUER_URL: http://oauth-mock:9000/fhir-iq-issuer
+      OAUTH_AUDIENCE: fhir-iq-pas
+
+      # Queue Configuration
+      QUEUE_REDIS_HOST: redis
+      QUEUE_REDIS_PORT: 6379
+      QUEUE_REDIS_PASSWORD: redis_pass
+
+      # Logging Configuration
+      LOG_LEVEL: debug
+
+      # Security Configuration
+      JWT_SECRET: development-secret-key-change-in-production
+      CORS_ORIGIN: "*"
+
+      # Feature Flags
+      ENABLE_MOCK_UM_ENGINE: true
+      ENABLE_CQL_EXECUTION: true
+      ENABLE_BULK_EXPORT: true
+    depends_on:
+      fhir-server:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      oauth-mock:
+        condition: service_healthy
+    volumes:
+      - ./src:/app/src
+      - ./tests:/app/tests
+      - ../specs:/app/specs:ro
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+
+  # BullMQ Dashboard for Queue Monitoring
+  bullmq-dashboard:
+    image: deadly0/bull-board
+    container_name: fpas-queue-dashboard
+    restart: unless-stopped
+    ports:
+      - "3001:3000"
+    environment:
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      REDIS_PASSWORD: redis_pass
+      REDIS_DB: 0
+    depends_on:
+      redis:
+        condition: service_healthy
+
+volumes:
+  postgres_data:
+    driver: local
+  redis_data:
+    driver: local
+
+networks:
+  default:
+    name: fpas-network

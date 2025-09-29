@@ -1,0 +1,77 @@
+{
+  "resourceType": "OperationDefinition",
+  "id": "Claim-inquire",
+  "url": "http://fhir-iq.com/OperationDefinition/Claim-inquire",
+  "version": "1.0.0",
+  "name": "ClaimInquire",
+  "title": "Inquire Prior Authorization Status",
+  "status": "draft",
+  "kind": "operation",
+  "experimental": true,
+  "date": "2025-09-26",
+  "publisher": "FHIR IQ Prior Authorization POC",
+  "contact": [
+    {
+      "name": "FHIR IQ Integration Team",
+      "telecom": [
+        {
+          "system": "email",
+          "value": "integration@fhir-iq.com"
+        }
+      ]
+    }
+  ],
+  "description": "Inquire about the status of a prior authorization request using the authorization reference or claim identifier. Returns the current ClaimResponse and any associated Task status.",
+  "jurisdiction": [
+    {
+      "coding": [
+        {
+          "system": "urn:iso:std:iso:3166",
+          "code": "US"
+        }
+      ]
+    }
+  ],
+  "code": "inquire",
+  "comment": "This operation allows providers to check the status of submitted prior authorization requests. The inquiry can be made using either the authorization reference number returned from the $submit operation or the original claim identifier.",
+  "resource": [
+    "Claim"
+  ],
+  "system": false,
+  "type": true,
+  "instance": false,
+  "parameter": [
+    {
+      "name": "identifier",
+      "use": "in",
+      "min": 0,
+      "max": "1",
+      "documentation": "The business identifier of the original claim submission",
+      "type": "Identifier"
+    },
+    {
+      "name": "authorizationReference",
+      "use": "in",
+      "min": 0,
+      "max": "1",
+      "documentation": "The authorization reference number returned from the $submit operation",
+      "type": "string"
+    },
+    {
+      "name": "patient",
+      "use": "in",
+      "min": 0,
+      "max": "1",
+      "documentation": "Reference to the patient for additional filtering",
+      "type": "Reference"
+    },
+    {
+      "name": "response",
+      "use": "out",
+      "min": 1,
+      "max": "1",
+      "documentation": "Bundle containing the current ClaimResponse and any associated Task resources showing processing status",
+      "type": "Bundle"
+    }
+  ]
+}

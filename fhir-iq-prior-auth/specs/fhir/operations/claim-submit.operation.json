@@ -1,0 +1,62 @@
+{
+  "resourceType": "OperationDefinition",
+  "id": "claim-submit",
+  "url": "http://hl7.org/fhir/us/davinci-pas/OperationDefinition/Claim-submit",
+  "version": "2.0.1",
+  "name": "ClaimSubmit",
+  "title": "Submit a PAS request",
+  "status": "active",
+  "kind": "operation",
+  "date": "2024-05-01",
+  "publisher": "HL7 International / Financial Management",
+  "contact": [
+    {
+      "name": "HL7 International / Financial Management",
+      "telecom": [
+        {
+          "system": "url",
+          "value": "http://www.hl7.org/Special/committees/fm"
+        }
+      ]
+    }
+  ],
+  "description": "This operation is used to submit a prior authorization request to a payer. The request is submitted as a Bundle containing a Claim resource and supporting documentation.",
+  "jurisdiction": [
+    {
+      "coding": [
+        {
+          "system": "urn:iso:std:iso:3166",
+          "code": "US",
+          "display": "United States of America"
+        }
+      ]
+    }
+  ],
+  "affectsState": true,
+  "code": "submit",
+  "comment": "This operation submits a prior authorization request Bundle to a payer for review. The Bundle must contain a Claim resource conforming to the PAS profile and may include supporting resources such as QuestionnaireResponse for DTR data.",
+  "resource": [
+    "Claim"
+  ],
+  "system": false,
+  "type": false,
+  "instance": false,
+  "parameter": [
+    {
+      "name": "resource",
+      "use": "in",
+      "min": 1,
+      "max": "1",
+      "documentation": "A Bundle resource containing the prior authorization request with Claim as the primary resource and supporting documentation",
+      "type": "Bundle"
+    },
+    {
+      "name": "return",
+      "use": "out",
+      "min": 1,
+      "max": "1",
+      "documentation": "A Bundle resource containing the ClaimResponse and any supporting resources, or a Task resource if processing asynchronously",
+      "type": "Bundle"
+    }
+  ]
+}

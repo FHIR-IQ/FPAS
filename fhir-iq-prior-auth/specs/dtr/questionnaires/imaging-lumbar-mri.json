@@ -1,0 +1,114 @@
+{
+  "resourceType": "Questionnaire",
+  "id": "imaging-lumbar-mri",
+  "meta": {
+    "profile": [
+      "http://hl7.org/fhir/us/davinci-dtr/StructureDefinition/dtr-questionnaire"
+    ]
+  },
+  "url": "http://fhir-iq.com/Questionnaire/imaging-lumbar-mri",
+  "version": "0.0.1",
+  "name": "ImagingLumbarMRIQuestionnaire",
+  "title": "Lumbar MRI Prior Authorization Questionnaire",
+  "status": "active",
+  "experimental": true,
+  "date": "2024-09-28",
+  "publisher": "FHIR IQ Prior Authorization POC",
+  "description": "Questionnaire for lumbar MRI prior authorization documentation requirements",
+  "purpose": "POC implementation for DTR-based documentation collection for lumbar MRI authorization",
+  "subjectType": ["Patient"],
+  "library": [
+    "http://fhir-iq.com/Library/imaging-lumbar-mri"
+  ],
+  "item": [
+    {
+      "linkId": "indication",
+      "text": "Primary clinical indication (ICD-10)",
+      "type": "choice",
+      "required": true,
+      "answerValueSet": "http://hl7.org/fhir/sid/icd-10",
+      "extension": [
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/questionnaire-itemControl",
+          "valueCodeableConcept": {
+            "coding": [
+              {
+                "system": "http://hl7.org/fhir/questionnaire-item-control",
+                "code": "drop-down",
+                "display": "Drop down"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "linkId": "failed-conservative",
+      "text": "Failure of conservative therapy (>=6 weeks)?",
+      "type": "boolean",
+      "required": true,
+      "initialExpression": {
+        "language": "text/cql",
+        "expression": "ExistsFailedConservativeTx()"
+      },
+      "extension": [
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/questionnaire-itemControl",
+          "valueCodeableConcept": {
+            "coding": [
+              {
+                "system": "http://hl7.org/fhir/questionnaire-item-control",
+                "code": "check-box",
+                "display": "Check-box"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "linkId": "neuro-deficit",
+      "text": "Objective neurologic deficit present?",
+      "type": "boolean",
+      "required": true,
+      "initialExpression": {
+        "language": "text/cql",
+        "expression": "HasNeuroDeficit()"
+      },
+      "extension": [
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/questionnaire-itemControl",
+          "valueCodeableConcept": {
+            "coding": [
+              {
+                "system": "http://hl7.org/fhir/questionnaire-item-control",
+                "code": "check-box",
+                "display": "Check-box"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "linkId": "prior-imaging",
+      "text": "Previous imaging studies of lumbar spine?",
+      "type": "boolean",
+      "required": false,
+      "initialExpression": {
+        "language": "text/cql",
+        "expression": "HasPriorLumbarImaging()"
+      }
+    },
+    {
+      "linkId": "red-flags",
+      "text": "Red flag symptoms present (fever, bowel/bladder dysfunction, progressive weakness)?",
+      "type": "boolean",
+      "required": true,
+      "initialExpression": {
+        "language": "text/cql",
+        "expression": "HasRedFlagSymptoms()"
+      }
+    }
+  ]
+}

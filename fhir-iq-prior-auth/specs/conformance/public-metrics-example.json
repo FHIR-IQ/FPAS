@@ -1,0 +1,513 @@
+{
+  "metadata": {
+    "reportingPeriod": {
+      "start": "2024-01-01T00:00:00Z",
+      "end": "2024-01-31T23:59:59Z",
+      "periodType": "monthly"
+    },
+    "generatedAt": "2024-02-01T08:00:00Z",
+    "dataFreshness": "2024-01-31T23:55:00Z",
+    "version": "v1.0.0",
+    "disclaimer": "This report contains aggregated prior authorization metrics in compliance with CMS-0057-F transparency requirements. Individual patient data is not included to protect privacy."
+  },
+
+  "summary": {
+    "totalRequests": 45687,
+    "slaCompliance": 94.2,
+    "systemAvailability": 99.7,
+    "averageDecisionTime": 18.5,
+    "expeditedRequests": 3421,
+    "expeditedSlaCompliance": 98.8
+  },
+
+  "data": {
+    "decisionTimes": {
+      "expedited": {
+        "description": "Requests requiring decision within 72 hours",
+        "slaWindow": "72 hours",
+        "totalRequests": 3421,
+        "slaCompliant": 3380,
+        "complianceRate": 98.8,
+
+        "metrics": {
+          "averageHours": 28.4,
+          "medianHours": 24.1,
+          "p95Hours": 58.2,
+          "p99Hours": 69.8
+        },
+
+        "distribution": {
+          "0-12_hours": 1847,
+          "12-24_hours": 892,
+          "24-48_hours": 551,
+          "48-72_hours": 90,
+          "over_72_hours": 41
+        },
+
+        "sampleTimestamps": [
+          {
+            "claimId": "expedited-001",
+            "submittedAt": "2024-01-15T14:30:00Z",
+            "decidedAt": "2024-01-16T10:15:00Z",
+            "elapsedHours": 19.75,
+            "slaCompliant": true,
+            "disposition": "approved",
+            "reason": "Red flag symptoms: cauda equina syndrome"
+          },
+          {
+            "claimId": "expedited-002",
+            "submittedAt": "2024-01-22T09:45:00Z",
+            "decidedAt": "2024-01-24T16:30:00Z",
+            "elapsedHours": 54.75,
+            "slaCompliant": true,
+            "disposition": "approved",
+            "reason": "Emergency cardiac catheterization"
+          },
+          {
+            "claimId": "expedited-003",
+            "submittedAt": "2024-01-28T16:20:00Z",
+            "decidedAt": "2024-02-01T02:45:00Z",
+            "elapsedHours": 82.42,
+            "slaCompliant": false,
+            "disposition": "pended",
+            "reason": "Additional clinical information required"
+          }
+        ]
+      },
+
+      "standard": {
+        "description": "Standard prior authorization requests",
+        "slaWindow": "14 calendar days",
+        "totalRequests": 42266,
+        "slaCompliant": 39894,
+        "complianceRate": 94.4,
+
+        "metrics": {
+          "averageHours": 156.7,
+          "medianHours": 132.4,
+          "p95Hours": 312.1,
+          "p99Hours": 335.8
+        },
+
+        "distribution": {
+          "0-1_days": 2341,
+          "1-3_days": 8792,
+          "3-7_days": 18456,
+          "7-14_days": 10302,
+          "over_14_days": 2375
+        },
+
+        "sampleTimestamps": [
+          {
+            "claimId": "standard-001",
+            "submittedAt": "2024-01-03T11:15:00Z",
+            "decidedAt": "2024-01-08T15:30:00Z",
+            "businessHours": 32.25,
+            "elapsedHours": 124.25,
+            "slaCompliant": true,
+            "disposition": "approved"
+          },
+          {
+            "claimId": "standard-002",
+            "submittedAt": "2024-01-10T14:20:00Z",
+            "decidedAt": "2024-01-25T10:45:00Z",
+            "businessHours": 88.42,
+            "elapsedHours": 356.42,
+            "slaCompliant": false,
+            "disposition": "denied",
+            "reason": "Insufficient clinical documentation"
+          }
+        ]
+      }
+    },
+
+    "authorizationOutcomes": {
+      "overall": {
+        "approved": {
+          "count": 28456,
+          "percentage": 62.3,
+          "averageDecisionTime": 142.5
+        },
+        "denied": {
+          "count": 8934,
+          "percentage": 19.6,
+          "averageDecisionTime": 198.7
+        },
+        "pended": {
+          "count": 6892,
+          "percentage": 15.1,
+          "averageDecisionTime": 245.3
+        },
+        "cancelled": {
+          "count": 1234,
+          "percentage": 2.7,
+          "averageDecisionTime": 67.2
+        },
+        "error": {
+          "count": 171,
+          "percentage": 0.4,
+          "averageDecisionTime": 8.9
+        }
+      },
+
+      "byServiceType": {
+        "imaging": {
+          "mri": {
+            "totalRequests": 12456,
+            "approved": 8734,
+            "approvalRate": 70.1,
+            "denied": 2145,
+            "denialRate": 17.2,
+            "pended": 1456,
+            "pendRate": 11.7,
+            "averageDecisionTime": 134.5
+          },
+          "ct": {
+            "totalRequests": 8932,
+            "approved": 6721,
+            "approvalRate": 75.2,
+            "denied": 1456,
+            "denialRate": 16.3,
+            "pended": 689,
+            "pendRate": 7.7,
+            "averageDecisionTime": 98.3
+          },
+          "pet": {
+            "totalRequests": 2134,
+            "approved": 1567,
+            "approvalRate": 73.4,
+            "denied": 445,
+            "denialRate": 20.8,
+            "pended": 112,
+            "pendRate": 5.2,
+            "averageDecisionTime": 189.7
+          }
+        },
+
+        "surgery": {
+          "orthopedic": {
+            "totalRequests": 6789,
+            "approved": 5234,
+            "approvalRate": 77.1,
+            "denied": 891,
+            "denialRate": 13.1,
+            "pended": 623,
+            "pendRate": 9.2,
+            "averageDecisionTime": 176.4
+          },
+          "cardiac": {
+            "totalRequests": 3456,
+            "approved": 2891,
+            "approvalRate": 83.6,
+            "denied": 334,
+            "denialRate": 9.7,
+            "pended": 198,
+            "pendRate": 5.7,
+            "averageDecisionTime": 156.8
+          }
+        },
+
+        "specialty": {
+          "oncology": {
+            "totalRequests": 4567,
+            "approved": 3789,
+            "approvalRate": 83.0,
+            "denied": 445,
+            "denialRate": 9.7,
+            "pended": 298,
+            "pendRate": 6.5,
+            "averageDecisionTime": 198.2
+          },
+          "dme": {
+            "totalRequests": 2834,
+            "approved": 2156,
+            "approvalRate": 76.1,
+            "denied": 456,
+            "denialRate": 16.1,
+            "pended": 198,
+            "pendRate": 7.0,
+            "averageDecisionTime": 145.7
+          }
+        }
+      },
+
+      "denialReasons": {
+        "medical": {
+          "insufficient_clinical_evidence": 3456,
+          "alternative_treatment_available": 2134,
+          "not_medically_necessary": 1789,
+          "experimental_investigational": 623
+        },
+        "administrative": {
+          "missing_documentation": 1567,
+          "invalid_provider_credentials": 234,
+          "incorrect_patient_information": 445,
+          "duplicate_request": 178
+        },
+        "coverage": {
+          "service_not_covered": 890,
+          "benefit_limits_exceeded": 456,
+          "member_not_eligible": 234,
+          "prior_auth_not_required": 123
+        },
+        "technical": {
+          "invalid_fhir_format": 89,
+          "missing_required_fields": 45,
+          "system_processing_error": 23,
+          "timeout_occurred": 14
+        }
+      }
+    },
+
+    "volumeMetrics": {
+      "dailyVolume": {
+        "peak": {
+          "date": "2024-01-15",
+          "requests": 2145,
+          "hour": "10:00-11:00",
+          "hourlyPeak": 198
+        },
+        "average": 1473,
+        "minimum": {
+          "date": "2024-01-01",
+          "requests": 891,
+          "reason": "New Year's Day"
+        }
+      },
+
+      "weeklyTrends": [
+        {
+          "week": "2024-01-01 to 2024-01-07",
+          "requests": 8934,
+          "decisions": 8756,
+          "slaCompliance": 93.8
+        },
+        {
+          "week": "2024-01-08 to 2024-01-14",
+          "requests": 11234,
+          "decisions": 10987,
+          "slaCompliance": 94.6
+        },
+        {
+          "week": "2024-01-15 to 2024-01-21",
+          "requests": 12456,
+          "decisions": 12123,
+          "slaCompliance": 95.1
+        },
+        {
+          "week": "2024-01-22 to 2024-01-28",
+          "requests": 11789,
+          "decisions": 11456,
+          "slaCompliant": 94.8
+        },
+        {
+          "week": "2024-01-29 to 2024-01-31",
+          "requests": 4274,
+          "decisions": 4098,
+          "slaCompliance": 92.1
+        }
+      ],
+
+      "geographicDistribution": {
+        "northeast": {
+          "requests": 8934,
+          "approvalRate": 68.5,
+          "averageDecisionTime": 156.7
+        },
+        "southeast": {
+          "requests": 12456,
+          "approvalRate": 71.2,
+          "averageDecisionTime": 142.3
+        },
+        "midwest": {
+          "requests": 9876,
+          "approvalRate": 69.8,
+          "averageDecisionTime": 167.9
+        },
+        "southwest": {
+          "requests": 7834,
+          "approvalRate": 66.3,
+          "averageDecisionTime": 178.4
+        },
+        "west": {
+          "requests": 6587,
+          "approvalRate": 73.1,
+          "averageDecisionTime": 134.6
+        }
+      }
+    },
+
+    "systemPerformance": {
+      "apiMetrics": {
+        "availability": {
+          "percentage": 99.7,
+          "downtimeMinutes": 129.6,
+          "plannedMaintenanceMinutes": 240.0,
+          "unplannedOutages": 2
+        },
+
+        "responseTime": {
+          "claimSubmit": {
+            "p50": 850,
+            "p95": 2340,
+            "p99": 4560,
+            "average": 1234
+          },
+          "claimInquire": {
+            "p50": 245,
+            "p95": 678,
+            "p99": 1234,
+            "average": 345
+          },
+          "dtrPrepopulate": {
+            "p50": 1456,
+            "p95": 3456,
+            "p99": 6789,
+            "average": 2134
+          }
+        },
+
+        "errorRates": {
+          "total": 0.34,
+          "4xxErrors": 0.28,
+          "5xxErrors": 0.06,
+          "timeouts": 0.02
+        }
+      },
+
+      "queueMetrics": {
+        "pasProcessing": {
+          "averageProcessingTime": 4.7,
+          "medianProcessingTime": 3.2,
+          "jobsProcessed": 45687,
+          "jobsFailed": 234,
+          "failureRate": 0.51
+        },
+
+        "dtrPrepopulation": {
+          "averageProcessingTime": 8.9,
+          "medianProcessingTime": 6.4,
+          "jobsProcessed": 23456,
+          "jobsFailed": 145,
+          "failureRate": 0.62
+        },
+
+        "notifications": {
+          "averageProcessingTime": 1.2,
+          "medianProcessingTime": 0.8,
+          "jobsProcessed": 91374,
+          "jobsFailed": 67,
+          "failureRate": 0.07
+        }
+      }
+    },
+
+    "complianceMetrics": {
+      "slaCompliance": {
+        "expedited72Hours": {
+          "target": 95.0,
+          "actual": 98.8,
+          "status": "exceeding",
+          "monthOverMonth": "+0.4%"
+        },
+        "standard14Days": {
+          "target": 90.0,
+          "actual": 94.4,
+          "status": "exceeding",
+          "monthOverMonth": "+1.2%"
+        }
+      },
+
+      "dataQuality": {
+        "completeness": 99.8,
+        "accuracy": 99.2,
+        "timeliness": 98.9,
+        "lastValidation": "2024-01-31T23:00:00Z"
+      },
+
+      "auditTrail": {
+        "recordsAudited": 45687,
+        "auditCompliance": 100.0,
+        "lastAuditDate": "2024-01-31T20:00:00Z",
+        "nextScheduledAudit": "2024-02-07T08:00:00Z"
+      }
+    },
+
+    "timeWindowAssertion": {
+      "description": "Sample records demonstrating SLA compliance measurement within 72-hour and 7-day windows",
+
+      "expeditedSamples": [
+        {
+          "claimId": "E2024-001-15387",
+          "submittedAt": "2024-01-15T08:30:00Z",
+          "decidedAt": "2024-01-17T02:15:00Z",
+          "windowStart": "2024-01-15T08:30:00Z",
+          "window72hEnd": "2024-01-18T08:30:00Z",
+          "actualElapsedHours": 41.75,
+          "withinWindow": true,
+          "bufferHours": 30.25,
+          "urgentIndicator": "Spinal cord compression",
+          "businessDays": "Mon 8:30 AM - Wed 2:15 AM"
+        },
+        {
+          "claimId": "E2024-001-23891",
+          "submittedAt": "2024-01-22T14:45:00Z",
+          "decidedAt": "2024-01-25T18:30:00Z",
+          "windowStart": "2024-01-22T14:45:00Z",
+          "window72hEnd": "2024-01-25T14:45:00Z",
+          "actualElapsedHours": 75.75,
+          "withinWindow": false,
+          "excessHours": 3.75,
+          "urgentIndicator": "Suspected stroke",
+          "escalationFlag": true,
+          "businessDays": "Mon 2:45 PM - Thu 6:30 PM"
+        }
+      ],
+
+      "standardSamples": [
+        {
+          "claimId": "S2024-001-11234",
+          "submittedAt": "2024-01-08T10:15:00Z",
+          "decidedAt": "2024-01-18T16:30:00Z",
+          "windowStart": "2024-01-08T10:15:00Z",
+          "window7dEnd": "2024-01-15T10:15:00Z",
+          "window14dEnd": "2024-01-22T10:15:00Z",
+          "actualElapsedHours": 246.25,
+          "businessHours": 62.75,
+          "within7Days": false,
+          "within14Days": true,
+          "bufferDays": 3.73,
+          "serviceType": "MRI Lumbar Spine",
+          "businessDays": "Mon 10:15 AM - Thu 4:30 PM (excluding weekends)"
+        },
+        {
+          "claimId": "S2024-001-23456",
+          "submittedAt": "2024-01-12T09:00:00Z",
+          "decidedAt": "2024-01-16T15:45:00Z",
+          "windowStart": "2024-01-12T09:00:00Z",
+          "window7dEnd": "2024-01-19T09:00:00Z",
+          "window14dEnd": "2024-01-26T09:00:00Z",
+          "actualElapsedHours": 102.75,
+          "businessHours": 30.75,
+          "within7Days": true,
+          "within14Days": true,
+          "bufferDays": 2.28,
+          "serviceType": "Cardiac Catheterization",
+          "businessDays": "Fri 9:00 AM - Tue 3:45 PM (MLK Day excluded)"
+        }
+      ]
+    }
+  },
+
+  "links": {
+    "self": "https://api.fhir-iq.com/metrics/public-report?period=2024-01",
+    "related": [
+      "https://api.fhir-iq.com/metrics/dashboard",
+      "https://api.fhir-iq.com/metrics/performance?period=monthly",
+      "https://api.fhir-iq.com/metrics/services/imaging?period=monthly"
+    ],
+    "documentation": "https://docs.fhir-iq.com/api/metrics",
+    "compliance": "https://fhir-iq.com/compliance/cms-0057-f",
+    "quarterly": "https://api.fhir-iq.com/metrics/public-report?quarter=2024-Q1"
+  }
+}

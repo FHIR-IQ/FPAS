@@ -1,0 +1,550 @@
+openapi: 3.0.3
+info:
+  title: FHIR IQ Prior Authorization Support API
+  description: |
+    FHIR-based Prior Authorization Support (PAS) API implementing Da Vinci PAS and DTR
+    Implementation Guides for CMS-0057-F compliance demonstration.
+
+    This API provides endpoints for:
+    - Submitting prior authorization requests (PAS)
+    - Inquiring about authorization status
+    - Documentation Templates and Rules (DTR) support
+    - Provider and Patient Access APIs
+    - Payer-to-payer bulk export operations
+  version: 1.0.0-poc
+  contact:
+    name: FHIR IQ Integration Team
+    email: integration@fhir-iq.com
+  license:
+    name: Apache 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0.html
+
+servers:
+  - url: https://pas-api.fhir-iq.com/fhir
+    description: Production FHIR IQ PAS Server
+  - url: http://localhost:3000/fhir
+    description: Local development server
+
+security:
+  - OAuth2:
+      - system/Claim.write
+      - user/Claim.read
+      - patient/Claim.read
+
+paths:
+  /Claim/$submit:
+    post:
+      summary: Submit Prior Authorization Request
+      description: |
+        Submit a prior authorization request Bundle containing a Claim resource
+        and supporting documentation per Da Vinci PAS IG requirements.
+      operationId: submitPriorAuth
+      security:
+        - OAuth2:
+            - system/Claim.write
+      requestBody:
+        required: true
+        content:
+          application/fhir+json:
+            schema:
+              $ref: '#/components/schemas/Bundle'
+            example:
+              resourceType: Bundle
+              type: collection
+              entry:
+                - resource:
+                    resourceType: Claim
+                    status: active
+                    type:
+                      coding:
+                        - system: http://terminology.hl7.org/CodeSystem/claim-type
+                          code: professional
+      responses:
+        '200':
+          description: Synchronous authorization response
+          content:
+            application/fhir+json:
+              schema:
+                $ref: '#/components/schemas/Bundle'
+        '202':
+          description: Asynchronous processing initiated
+          content:
+            application/fhir+json:
+              schema:
+                $ref: '#/components/schemas/Task'
+        '400':
+          description: Invalid request or validation errors
+          content:
+            application/fhir+json:
+              schema:
+                $ref: '#/components/schemas/OperationOutcome'
+        '401':
+          description: Authentication required
+          content:
+            application/fhir+json:
+              schema:
+                $ref: '#/components/schemas/OperationOutcome'
+        '403':
+          description: Insufficient permissions
+          content:
+            application/fhir+json:
+              schema:
+                $ref: '#/components/schemas/OperationOutcome'
+
+  /Claim/$inquire:
+    post:
+      summary: Inquire Prior Authorization Status
+      description: |
+        Check the status of a previously submitted prior authorization request
+        using claim identifier, patient reference, or authorization number.
+      operationId: inquirePriorAuth
+      security:
+        - OAuth2:
+            - user/Claim.read
+            - system/Claim.read
+      requestBody:
+        required: true
+        content:
+          application/fhir+json:
+            schema:
+              type: object
+              properties:
+                resourceType:
+                  type: string
+                  enum: [Parameters]
+                parameter:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      name:
+                        type: string
+                        enum: [identifier, patient, provider, authorizationNumber]
+                      valueIdentifier:
+                        $ref: '#/components/schemas/Identifier'
+                      valueReference:
+                        $ref: '#/components/schemas/Reference'
+                      valueString:
+                        type: string
+      responses:
+        '200':
+          description: Authorization status found
+          content:
+            application/fhir+json:
+              schema:
+                $ref: '#/components/schemas/Bundle'
+        '404':
+          description: Authorization not found
+          content:
+            application/fhir+json:
+              schema:
+                $ref: '#/components/schemas/OperationOutcome'
+
+  /ClaimResponse:
+    get:
+      summary: Search Prior Authorization Responses
+      description: Search for ClaimResponse resources with filtering support
+      operationId: searchClaimResponses
+      security:
+        - OAuth2:
+            - user/ClaimResponse.read
+            - patient/ClaimResponse.read
+      parameters:
+        - name: patient
+          in: query
+          description: Patient reference for filtering
+          schema:
+            type: string
+        - name: request
+          in: query
+          description: Reference to the original Claim
+          schema:
+            type: string
+        - name: outcome
+          in: query
+          description: Authorization outcome (approved, denied, pending)
+          schema:
+            type: string
+            enum: [complete, error, partial]
+        - name: _count
+          in: query
+          description: Number of results per page
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
+        - name: _offset
+          in: query
+          description: Offset for pagination
+          schema:
+            type: integer
+            minimum: 0
+            default: 0
+      responses:
+        '200':
+          description: Search results
+          content:
+            application/fhir+json:
+              schema:
+                $ref: '#/components/schemas/Bundle'
+
+  /Questionnaire:
+    get:
+      summary: Search DTR Questionnaires
+      description: Retrieve questionnaires for documentation requirements
+      operationId: searchQuestionnaires
+      security:
+        - OAuth2:
+            - user/Questionnaire.read
+            - system/Questionnaire.read
+      parameters:
+        - name: url
+          in: query
+          description: Canonical URL of the questionnaire
+          schema:
+            type: string
+            format: uri
+        - name: context
+          in: query
+          description: Use context (service type)
+          schema:
+            type: string
+        - name: _count
+          in: query
+          schema:
+            type: integer
+            default: 20
+      responses:
+        '200':
+          description: Available questionnaires
+          content:
+            application/fhir+json:
+              schema:
+                $ref: '#/components/schemas/Bundle'
+
+  /QuestionnaireResponse:
+    post:
+      summary: Submit Questionnaire Response
+      description: Submit completed DTR questionnaire response
+      operationId: createQuestionnaireResponse
+      security:
+        - OAuth2:
+            - user/QuestionnaireResponse.write
+            - system/QuestionnaireResponse.write
+      requestBody:
+        required: true
+        content:
+          application/fhir+json:
+            schema:
+              $ref: '#/components/schemas/QuestionnaireResponse'
+      responses:
+        '201':
+          description: QuestionnaireResponse created
+          content:
+            application/fhir+json:
+              schema:
+                $ref: '#/components/schemas/QuestionnaireResponse'
+
+  /Questionnaire/{id}/$populate:
+    post:
+      summary: Populate Questionnaire with Patient Data
+      description: |
+        Prepopulate a questionnaire with patient data using CQL expressions
+        as defined in the Da Vinci DTR Implementation Guide.
+      operationId: populateQuestionnaire
+      security:
+        - OAuth2:
+            - user/Questionnaire.read
+            - system/Questionnaire.read
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Questionnaire resource ID
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/fhir+json:
+            schema:
+              type: object
+              properties:
+                resourceType:
+                  type: string
+                  enum: [Parameters]
+                parameter:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      name:
+                        type: string
+                        enum: [subject, practitioner, organization]
+                      valueReference:
+                        $ref: '#/components/schemas/Reference'
+      responses:
+        '200':
+          description: Prepopulated questionnaire response
+          content:
+            application/fhir+json:
+              schema:
+                $ref: '#/components/schemas/QuestionnaireResponse'
+
+  /Patient/{id}/$export:
+    get:
+      summary: Export Patient Data (Bulk)
+      description: |
+        Bulk export operation for payer-to-payer member data transfer
+        supporting member switching scenarios.
+      operationId: exportPatientData
+      security:
+        - OAuth2:
+            - system/Patient.read
+            - system/export
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Patient resource ID or Group ID
+          schema:
+            type: string
+        - name: _type
+          in: query
+          description: Resource types to include in export
+          schema:
+            type: string
+            example: "Patient,Claim,ClaimResponse,Coverage"
+        - name: _since
+          in: query
+          description: Only resources modified after this date
+          schema:
+            type: string
+            format: date-time
+      responses:
+        '202':
+          description: Export job started
+          headers:
+            Content-Location:
+              schema:
+                type: string
+                format: uri
+              description: URL to poll for export status
+
+  /metadata:
+    get:
+      summary: Server Capability Statement
+      description: FHIR CapabilityStatement describing server capabilities
+      operationId: getCapabilityStatement
+      responses:
+        '200':
+          description: Server capabilities
+          content:
+            application/fhir+json:
+              schema:
+                $ref: '#/components/schemas/CapabilityStatement'
+
+  /health:
+    get:
+      summary: Health Check
+      description: Service health status endpoint
+      operationId: healthCheck
+      responses:
+        '200':
+          description: Service healthy
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    enum: [healthy]
+                  timestamp:
+                    type: string
+                    format: date-time
+                  services:
+                    type: object
+                    properties:
+                      database:
+                        type: string
+                        enum: [healthy, unhealthy]
+                      redis:
+                        type: string
+                        enum: [healthy, unhealthy]
+                      fhir:
+                        type: string
+                        enum: [healthy, unhealthy]
+
+components:
+  securitySchemes:
+    OAuth2:
+      type: oauth2
+      flows:
+        authorizationCode:
+          authorizationUrl: https://auth.fhir-iq.com/oauth2/authorize
+          tokenUrl: https://auth.fhir-iq.com/oauth2/token
+          scopes:
+            system/Claim.read: Read claim resources (system)
+            system/Claim.write: Write claim resources (system)
+            user/Claim.read: Read claim resources (user)
+            user/ClaimResponse.read: Read claim response resources (user)
+            patient/Claim.read: Read patient's claim resources
+            patient/ClaimResponse.read: Read patient's claim responses
+            user/Questionnaire.read: Read questionnaire resources
+            user/QuestionnaireResponse.write: Create questionnaire responses
+            system/Patient.read: Read patient resources (system)
+            system/export: Perform bulk export operations
+        clientCredentials:
+          tokenUrl: https://auth.fhir-iq.com/oauth2/token
+          scopes:
+            system/Claim.write: Write claim resources (system)
+            system/export: Perform bulk export operations
+
+  schemas:
+    Bundle:
+      type: object
+      properties:
+        resourceType:
+          type: string
+          enum: [Bundle]
+        type:
+          type: string
+          enum: [document, collection, searchset, batch-response]
+        total:
+          type: integer
+        entry:
+          type: array
+          items:
+            type: object
+
+    Task:
+      type: object
+      properties:
+        resourceType:
+          type: string
+          enum: [Task]
+        status:
+          type: string
+          enum: [draft, requested, received, accepted, in-progress, completed, failed]
+        focus:
+          $ref: '#/components/schemas/Reference'
+
+    Claim:
+      type: object
+      properties:
+        resourceType:
+          type: string
+          enum: [Claim]
+        status:
+          type: string
+          enum: [active, cancelled, draft]
+        type:
+          $ref: '#/components/schemas/CodeableConcept'
+
+    ClaimResponse:
+      type: object
+      properties:
+        resourceType:
+          type: string
+          enum: [ClaimResponse]
+        status:
+          type: string
+          enum: [active, cancelled, draft, entered-in-error]
+        outcome:
+          type: string
+          enum: [complete, error, partial]
+
+    QuestionnaireResponse:
+      type: object
+      properties:
+        resourceType:
+          type: string
+          enum: [QuestionnaireResponse]
+        status:
+          type: string
+          enum: [in-progress, completed, amended, entered-in-error, stopped]
+        questionnaire:
+          type: string
+          format: uri
+
+    CapabilityStatement:
+      type: object
+      properties:
+        resourceType:
+          type: string
+          enum: [CapabilityStatement]
+        status:
+          type: string
+        fhirVersion:
+          type: string
+
+    OperationOutcome:
+      type: object
+      properties:
+        resourceType:
+          type: string
+          enum: [OperationOutcome]
+        issue:
+          type: array
+          items:
+            type: object
+            properties:
+              severity:
+                type: string
+                enum: [fatal, error, warning, information]
+              code:
+                type: string
+              details:
+                $ref: '#/components/schemas/CodeableConcept'
+
+    Identifier:
+      type: object
+      properties:
+        use:
+          type: string
+          enum: [usual, official, temp, secondary]
+        system:
+          type: string
+          format: uri
+        value:
+          type: string
+
+    Reference:
+      type: object
+      properties:
+        reference:
+          type: string
+        display:
+          type: string
+
+    CodeableConcept:
+      type: object
+      properties:
+        coding:
+          type: array
+          items:
+            type: object
+            properties:
+              system:
+                type: string
+                format: uri
+              code:
+                type: string
+              display:
+                type: string
+        text:
+          type: string
+
+tags:
+  - name: Prior Authorization
+    description: PAS operations for authorization requests
+  - name: Documentation
+    description: DTR questionnaire and response operations
+  - name: Search
+    description: Resource search and retrieval operations
+  - name: Bulk Export
+    description: Payer-to-payer data export operations
+  - name: System
+    description: System health and capability endpoints

@@ -1,0 +1,52 @@
+sequenceDiagram
+    participant EHR as EHR System
+    participant DTR as DTR Service
+    participant API as API Gateway
+    participant FHIR as FHIR Server
+    participant Queue as Queue System
+    participant UM as UM Engine
+    participant Payer as Payer System
+
+    Note over EHR, Payer: Prior Authorization End-to-End Workflow
+
+    %% DTR Phase - Documentation Collection
+    EHR->>DTR: GET /Questionnaire?context=lumbar-mri
+    DTR->>FHIR: Retrieve questionnaire template
+    DTR-->>EHR: Questionnaire with CQL expressions
+
+    EHR->>DTR: POST /Questionnaire/{id}/$populate
+    Note over DTR: Execute CQL against patient data
+    DTR->>FHIR: Query patient clinical data
+    DTR-->>EHR: Prepopulated QuestionnaireResponse
+
+    Note over EHR: Provider completes questionnaire
+    EHR->>API: POST /QuestionnaireResponse
+    API->>FHIR: Store completed response
+
+    %% PAS Phase - Authorization Request
+    EHR->>API: POST /Claim/$submit (PAS Bundle)
+    Note over API: Validate OAuth token & scopes
+    API->>API: Validate PAS Bundle profiles
+    API->>FHIR: Store Claim and supporting resources
+    API->>Queue: Enqueue PA request for processing
+    API-->>EHR: 202 Accepted + Task reference
+
+    %% Background Processing
+    Queue->>UM: Process PA request
+    Note over UM: Apply clinical decision rules<br/>Check conservative therapy<br/>Evaluate neurologic deficits
+    UM->>UM: Generate authorization decision
+    UM->>FHIR: Create ClaimResponse
+    UM->>FHIR: Update Task status to completed
+    UM->>Payer: Notify of decision
+
+    %% Status Polling
+    EHR->>API: GET /Task/{id} (status polling)
+    API->>FHIR: Retrieve Task status
+    API-->>EHR: Task with ClaimResponse reference
+
+    %% Response Retrieval
+    EHR->>API: GET /ClaimResponse/{id}
+    API->>FHIR: Retrieve authorization response
+    API-->>EHR: ClaimResponse with decision
+
+    Note over EHR, Payer: Authorization Complete - Provider can schedule procedure

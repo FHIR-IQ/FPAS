@@ -1,0 +1,53 @@
+sequenceDiagram
+    participant NewPayer as New Payer
+    participant OldPayer as Old Payer API
+    participant Auth as OAuth Server
+    participant Queue as Export Queue
+    participant Storage as File Storage
+
+    Note over NewPayer, Storage: Payer-to-Payer Bulk Export for Member Switching
+
+    %% Authentication for System Access
+    NewPayer->>Auth: POST /oauth2/token<br/>client_credentials grant<br/>scope=system/export
+    Auth->>Auth: Validate client certificate
+    Auth-->>NewPayer: System access token
+
+    %% Initiate Bulk Export
+    NewPayer->>OldPayer: GET /Patient/{group-id}/$export<br/>_type=Patient,Claim,ClaimResponse,Coverage<br/>_since=2024-01-01
+    Note over OldPayer: Validate system scopes<br/>Check payer authorization
+    OldPayer->>Queue: Enqueue bulk export job
+    OldPayer-->>NewPayer: 202 Accepted<br/>Content-Location: /bulk-export/job-123
+
+    %% Background Processing
+    Queue->>Queue: Process export job
+    Note over Queue: Extract member data<br/>Filter by date range<br/>Apply privacy rules
+    Queue->>Storage: Write NDJSON files
+    Queue->>Queue: Update job status
+
+    %% Status Polling
+    NewPayer->>OldPayer: GET /bulk-export/job-123<br/>Authorization: Bearer {token}
+    OldPayer-->>NewPayer: 202 In Progress<br/>X-Progress: 45%
+
+    loop Status Check
+        Note over NewPayer: Wait 30 seconds
+        NewPayer->>OldPayer: GET /bulk-export/job-123
+        OldPayer-->>NewPayer: 202 In Progress
+    end
+
+    %% Export Complete
+    NewPayer->>OldPayer: GET /bulk-export/job-123
+    OldPayer-->>NewPayer: 200 Complete<br/>Body: [{"type": "Patient", "url": "https://..."}, ...]
+
+    %% Download Files
+    loop For each file URL
+        NewPayer->>Storage: GET {file-url}<br/>Authorization: Bearer {token}
+        Storage-->>NewPayer: NDJSON file content
+    end
+
+    %% Cleanup
+    Note over NewPayer: Process member data<br/>Import to new system
+    NewPayer->>OldPayer: DELETE /bulk-export/job-123
+    OldPayer->>Storage: Delete temporary files
+    OldPayer-->>NewPayer: 204 No Content
+
+    Note over NewPayer, Storage: Member data successfully transferred

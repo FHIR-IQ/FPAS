@@ -1,0 +1,271 @@
+{
+  "resourceType": "CapabilityStatement",
+  "id": "payer-provider-access-server",
+  "url": "http://fhir-iq.com/CapabilityStatement/payer-provider-access-server",
+  "version": "1.0.0",
+  "name": "PayerProviderAccessServerCapabilityStatement",
+  "title": "Payer Provider Access API Server Capability Statement",
+  "status": "draft",
+  "experimental": true,
+  "date": "2025-09-26",
+  "publisher": "FHIR IQ Prior Authorization POC",
+  "contact": [
+    {
+      "name": "FHIR IQ Integration Team",
+      "telecom": [
+        {
+          "system": "email",
+          "value": "integration@fhir-iq.com"
+        }
+      ]
+    }
+  ],
+  "description": "Capability Statement for FHIR IQ Provider Access API server enabling providers to query historical prior authorization data and supporting CMS-0057-F compliance",
+  "jurisdiction": [
+    {
+      "coding": [
+        {
+          "system": "urn:iso:std:iso:3166",
+          "code": "US",
+          "display": "United States of America"
+        }
+      ]
+    }
+  ],
+  "kind": "instance",
+  "software": {
+    "name": "FHIR IQ Provider Access API",
+    "version": "1.0.0-poc",
+    "releaseDate": "2025-09-26"
+  },
+  "implementation": {
+    "description": "FHIR IQ POC Provider Access API server",
+    "url": "https://provider-api.fhir-iq.com/fhir"
+  },
+  "fhirVersion": "4.0.1",
+  "format": [
+    "application/fhir+json"
+  ],
+  "implementationGuide": [
+    "http://hl7.org/fhir/us/davinci-pdex/ImplementationGuide/hl7.fhir.us.davinci-pdex",
+    "http://hl7.org/fhir/us/davinci-pas/ImplementationGuide/hl7.fhir.us.davinci-pas",
+    "http://hl7.org/fhir/us/core/ImplementationGuide/hl7.fhir.us.core"
+  ],
+  "rest": [
+    {
+      "mode": "server",
+      "documentation": "FHIR IQ Provider Access API for querying historical prior authorization data",
+      "security": {
+        "cors": true,
+        "service": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/restful-security-service",
+                "code": "OAuth",
+                "display": "OAuth2"
+              }
+            ],
+            "text": "OAuth2 with SMART on FHIR provider scopes"
+          }
+        ],
+        "description": "OAuth2 implementation requiring provider-level authentication and authorization"
+      },
+      "resource": [
+        {
+          "type": "Claim",
+          "profile": "http://hl7.org/fhir/us/davinci-pas/StructureDefinition/profile-claim",
+          "documentation": "Historical prior authorization requests accessible to authorized providers",
+          "interaction": [
+            {
+              "code": "read",
+              "documentation": "Read specific prior authorization request"
+            },
+            {
+              "code": "search-type",
+              "documentation": "Search prior authorization requests by patient, date range, or status"
+            }
+          ],
+          "searchParam": [
+            {
+              "name": "patient",
+              "definition": "http://hl7.org/fhir/SearchParameter/Claim-patient",
+              "type": "reference",
+              "documentation": "Patient receiving the services - required for provider access"
+            },
+            {
+              "name": "status",
+              "definition": "http://hl7.org/fhir/SearchParameter/Claim-status",
+              "type": "token",
+              "documentation": "The status of the claim (active, cancelled, draft, entered-in-error)"
+            },
+            {
+              "name": "created",
+              "definition": "http://hl7.org/fhir/SearchParameter/Claim-created",
+              "type": "date",
+              "documentation": "The creation date for the claim"
+            },
+            {
+              "name": "_include",
+              "definition": "http://hl7.org/fhir/SearchParameter/Resource-include",
+              "type": "string",
+              "documentation": "Include related resources (Patient, Coverage, ClaimResponse)"
+            },
+            {
+              "name": "_count",
+              "definition": "http://hl7.org/fhir/SearchParameter/Resource-count",
+              "type": "number",
+              "documentation": "Number of results per page"
+            },
+            {
+              "name": "_sort",
+              "definition": "http://hl7.org/fhir/SearchParameter/Resource-sort",
+              "type": "string",
+              "documentation": "Sort order (created, -created)"
+            }
+          ]
+        },
+        {
+          "type": "ClaimResponse",
+          "profile": "http://hl7.org/fhir/us/davinci-pas/StructureDefinition/profile-claimresponse",
+          "documentation": "Historical prior authorization responses accessible to authorized providers",
+          "interaction": [
+            {
+              "code": "read",
+              "documentation": "Read specific prior authorization response"
+            },
+            {
+              "code": "search-type",
+              "documentation": "Search prior authorization responses"
+            }
+          ],
+          "searchParam": [
+            {
+              "name": "request",
+              "definition": "http://hl7.org/fhir/SearchParameter/ClaimResponse-request",
+              "type": "reference",
+              "documentation": "Reference to the original claim"
+            },
+            {
+              "name": "outcome",
+              "definition": "http://hl7.org/fhir/SearchParameter/ClaimResponse-outcome",
+              "type": "token",
+              "documentation": "The processing outcome (queued, complete, error, partial)"
+            },
+            {
+              "name": "disposition",
+              "definition": "http://hl7.org/fhir/SearchParameter/ClaimResponse-disposition",
+              "type": "string",
+              "documentation": "The processing disposition (approved, denied, pending)"
+            },
+            {
+              "name": "created",
+              "definition": "http://hl7.org/fhir/SearchParameter/ClaimResponse-created",
+              "type": "date",
+              "documentation": "The creation date"
+            }
+          ]
+        },
+        {
+          "type": "Patient",
+          "profile": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-patient",
+          "documentation": "Patient demographics for authorization context - limited to provider's patients",
+          "interaction": [
+            {
+              "code": "read",
+              "documentation": "Read patient information for provider's patients only"
+            },
+            {
+              "code": "search-type",
+              "documentation": "Search patients accessible to provider"
+            }
+          ],
+          "searchParam": [
+            {
+              "name": "identifier",
+              "definition": "http://hl7.org/fhir/SearchParameter/Patient-identifier",
+              "type": "token",
+              "documentation": "Patient identifier"
+            },
+            {
+              "name": "name",
+              "definition": "http://hl7.org/fhir/SearchParameter/Patient-name",
+              "type": "string",
+              "documentation": "Patient name"
+            }
+          ]
+        },
+        {
+          "type": "Coverage",
+          "documentation": "Insurance coverage information for provider's patients",
+          "interaction": [
+            {
+              "code": "read",
+              "documentation": "Read coverage information"
+            },
+            {
+              "code": "search-type",
+              "documentation": "Search coverage records"
+            }
+          ],
+          "searchParam": [
+            {
+              "name": "beneficiary",
+              "definition": "http://hl7.org/fhir/SearchParameter/Coverage-beneficiary",
+              "type": "reference",
+              "documentation": "Covered party - must be provider's patient"
+            }
+          ]
+        },
+        {
+          "type": "Task",
+          "documentation": "Tasks for tracking async prior authorization workflow status",
+          "interaction": [
+            {
+              "code": "read",
+              "documentation": "Read task status"
+            },
+            {
+              "code": "search-type",
+              "documentation": "Search tasks related to provider's submissions"
+            }
+          ],
+          "searchParam": [
+            {
+              "name": "status",
+              "definition": "http://hl7.org/fhir/SearchParameter/Task-status",
+              "type": "token",
+              "documentation": "Task status (requested, received, accepted, in-progress, completed, cancelled)"
+            },
+            {
+              "name": "focus",
+              "definition": "http://hl7.org/fhir/SearchParameter/Task-focus",
+              "type": "reference",
+              "documentation": "What task is about (Claim reference)"
+            }
+          ]
+        }
+      ],
+      "interaction": [
+        {
+          "code": "search-system",
+          "documentation": "Cross-resource search capabilities"
+        }
+      ],
+      "searchParam": [
+        {
+          "name": "_lastUpdated",
+          "definition": "http://hl7.org/fhir/SearchParameter/Resource-lastUpdated",
+          "type": "date",
+          "documentation": "When resource was last changed"
+        },
+        {
+          "name": "_id",
+          "definition": "http://hl7.org/fhir/SearchParameter/Resource-id",
+          "type": "token",
+          "documentation": "Logical id of resource"
+        }
+      ]
+    }
+  ]
+}

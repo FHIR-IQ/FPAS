@@ -1,0 +1,99 @@
+# Dependencies
+node_modules/
+*/node_modules/
+package-lock.json
+*/package-lock.json
+yarn.lock
+*/yarn.lock
+pnpm-lock.yaml
+*/pnpm-lock.yaml
+
+# Build outputs
+dist/
+*/dist/
+build/
+*/build/
+out/
+*/out/
+.next/
+*/.next/
+
+# Environment files
+.env
+.env.*
+!.env.example
+!.env.template
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# Test coverage
+coverage/
+*/coverage/
+*.lcov
+.nyc_output/
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# Cache
+.cache/
+.turbo/
+*.tsbuildinfo
+.eslintcache
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+*.temp
+
+# OS files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Vercel
+.vercel/
+
+# Testing
+test-results/
+playwright-report/
+playwright/.cache/
+
+# Inferno test kit (downloaded during setup)
+inferno-dtr-test-kit/
+
+# Redis dump
+dump.rdb
+
+# Documentation build
+docs/_site/
+docs/.jekyll-cache/
+
+# Compliance reports (regenerated)
+compliance-report.json
+
+# Local development
+.claude/
+*.local
+
+# Backup files
+*.backup
+*.bak
+
+# Generated files that should be built
+fhir-packages/
+validator_cli.jar

@@ -1,0 +1,86 @@
+{
+  "resourceType": "OperationDefinition",
+  "id": "claim-inquire",
+  "url": "http://hl7.org/fhir/us/davinci-pas/OperationDefinition/Claim-inquire",
+  "version": "2.0.1",
+  "name": "ClaimInquire",
+  "title": "Inquire on a PAS request",
+  "status": "active",
+  "kind": "operation",
+  "date": "2024-05-01",
+  "publisher": "HL7 International / Financial Management",
+  "contact": [
+    {
+      "name": "HL7 International / Financial Management",
+      "telecom": [
+        {
+          "system": "url",
+          "value": "http://www.hl7.org/Special/committees/fm"
+        }
+      ]
+    }
+  ],
+  "description": "This operation is used to inquire about the status of a prior authorization request that was previously submitted to a payer.",
+  "jurisdiction": [
+    {
+      "coding": [
+        {
+          "system": "urn:iso:std:iso:3166",
+          "code": "US",
+          "display": "United States of America"
+        }
+      ]
+    }
+  ],
+  "affectsState": false,
+  "code": "inquire",
+  "comment": "This operation allows providers to check the status of a previously submitted prior authorization request by providing identifying information such as the claim identifier or authorization number.",
+  "resource": [
+    "Claim"
+  ],
+  "system": false,
+  "type": false,
+  "instance": false,
+  "parameter": [
+    {
+      "name": "identifier",
+      "use": "in",
+      "min": 0,
+      "max": "1",
+      "documentation": "The business identifier of the original claim being inquired about",
+      "type": "Identifier"
+    },
+    {
+      "name": "patient",
+      "use": "in",
+      "min": 0,
+      "max": "1",
+      "documentation": "Reference to the patient for whom the prior authorization was requested",
+      "type": "Reference"
+    },
+    {
+      "name": "provider",
+      "use": "in",
+      "min": 0,
+      "max": "1",
+      "documentation": "Reference to the provider who submitted the original request",
+      "type": "Reference"
+    },
+    {
+      "name": "authorizationNumber",
+      "use": "in",
+      "min": 0,
+      "max": "1",
+      "documentation": "The authorization number assigned by the payer (if known)",
+      "type": "string"
+    },
+    {
+      "name": "return",
+      "use": "out",
+      "min": 1,
+      "max": "1",
+      "documentation": "A Bundle resource containing the ClaimResponse(s) and supporting resources that match the inquiry criteria",
+      "type": "Bundle"
+    }
+  ]
+}

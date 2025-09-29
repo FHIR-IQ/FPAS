@@ -1,0 +1,40 @@
+sequenceDiagram
+    participant Provider as Provider App
+    participant Auth as OAuth Server
+    participant API as API Gateway
+    participant FHIR as FHIR Server
+
+    Note over Provider, FHIR: Provider Access API with OAuth SMART v2
+
+    %% OAuth Authorization Flow
+    Provider->>Auth: GET /oauth2/authorize<br/>client_id, scope=user/Claim.read
+    Note over Auth: User authentication & consent
+    Auth-->>Provider: Authorization code
+
+    Provider->>Auth: POST /oauth2/token<br/>authorization_code grant
+    Auth->>Auth: Validate client & code
+    Auth-->>Provider: Access token + refresh token
+
+    %% API Access with Token
+    Provider->>API: GET /ClaimResponse?patient=Patient/123<br/>Authorization: Bearer {token}
+    API->>API: Validate token & scopes
+    API->>API: Check provider attribution
+    Note over API: Ensure provider can access<br/>this patient's data
+
+    API->>FHIR: Search ClaimResponse resources
+    FHIR-->>API: Bundle with results
+    API-->>Provider: Filtered authorization responses
+
+    %% Token Refresh
+    Note over Provider: Token expires after 1 hour
+    Provider->>Auth: POST /oauth2/token<br/>refresh_token grant
+    Auth-->>Provider: New access token
+
+    %% Search Patient's Authorization History
+    Provider->>API: GET /Claim?patient=Patient/123&status=active
+    API->>API: Validate token & patient scope
+    API->>FHIR: Search patient's claims
+    FHIR-->>API: Bundle with patient's PAs
+    API-->>Provider: Authorization history
+
+    Note over Provider, FHIR: Provider can view patient's authorization status

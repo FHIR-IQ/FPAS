@@ -1,0 +1,329 @@
+{
+  "resourceType": "Bundle",
+  "id": "pas-response-example",
+  "meta": {
+    "profile": [
+      "http://hl7.org/fhir/us/davinci-pas/StructureDefinition/profile-pas-response-bundle"
+    ]
+  },
+  "type": "collection",
+  "timestamp": "2025-09-26T10:32:00-05:00",
+  "entry": [
+    {
+      "fullUrl": "http://fhir-iq.com/ClaimResponse/pas-response-example",
+      "resource": {
+        "resourceType": "ClaimResponse",
+        "id": "pas-response-example",
+        "meta": {
+          "profile": [
+            "http://hl7.org/fhir/us/davinci-pas/StructureDefinition/profile-claimresponse"
+          ]
+        },
+        "identifier": [
+          {
+            "system": "http://fhir-iq.com/authorization-id",
+            "value": "AUTH-2025-092601-001"
+          }
+        ],
+        "status": "active",
+        "type": {
+          "coding": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/claim-type",
+              "code": "professional",
+              "display": "Professional"
+            }
+          ]
+        },
+        "use": "preauthorization",
+        "patient": {
+          "reference": "Patient/patient-example"
+        },
+        "created": "2025-09-26T10:32:00-05:00",
+        "insurer": {
+          "reference": "Organization/payer-example"
+        },
+        "requestor": {
+          "reference": "Organization/provider-example"
+        },
+        "request": {
+          "reference": "Claim/pas-claim-example"
+        },
+        "outcome": "complete",
+        "disposition": "Approved - Lumbar MRI authorized for medical necessity",
+        "preAuthRef": "AUTH-2025-092601-001",
+        "preAuthPeriod": {
+          "start": "2025-09-26",
+          "end": "2025-12-26"
+        },
+        "payeeType": {
+          "coding": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/payeetype",
+              "code": "provider",
+              "display": "Provider"
+            }
+          ]
+        },
+        "item": [
+          {
+            "itemSequence": 1,
+            "adjudication": [
+              {
+                "category": {
+                  "coding": [
+                    {
+                      "system": "http://terminology.hl7.org/CodeSystem/adjudication",
+                      "code": "eligible",
+                      "display": "Eligible Amount"
+                    }
+                  ]
+                },
+                "amount": {
+                  "value": 1200.00,
+                  "currency": "USD"
+                }
+              },
+              {
+                "category": {
+                  "coding": [
+                    {
+                      "system": "http://terminology.hl7.org/CodeSystem/adjudication",
+                      "code": "benefit",
+                      "display": "Benefit Amount"
+                    }
+                  ]
+                },
+                "amount": {
+                  "value": 960.00,
+                  "currency": "USD"
+                }
+              }
+            ]
+          }
+        ],
+        "addItem": [
+          {
+            "itemSequence": [1],
+            "productOrService": {
+              "coding": [
+                {
+                  "system": "http://terminology.hl7.org/CodeSystem/ex-pharmaservice",
+                  "code": "smokecess",
+                  "display": "Smoking cessation"
+                }
+              ]
+            },
+            "modifier": [
+              {
+                "coding": [
+                  {
+                    "system": "http://terminology.hl7.org/CodeSystem/modifiers",
+                    "code": "a",
+                    "display": "Approved"
+                  }
+                ]
+              }
+            ],
+            "net": {
+              "value": 0.00,
+              "currency": "USD"
+            },
+            "noteNumber": [1]
+          }
+        ],
+        "total": [
+          {
+            "category": {
+              "coding": [
+                {
+                  "system": "http://terminology.hl7.org/CodeSystem/adjudication",
+                  "code": "submitted",
+                  "display": "Submitted Amount"
+                }
+              ]
+            },
+            "amount": {
+              "value": 1200.00,
+              "currency": "USD"
+            }
+          },
+          {
+            "category": {
+              "coding": [
+                {
+                  "system": "http://terminology.hl7.org/CodeSystem/adjudication",
+                  "code": "benefit",
+                  "display": "Benefit Amount"
+                }
+              ]
+            },
+            "amount": {
+              "value": 960.00,
+              "currency": "USD"
+            }
+          }
+        ],
+        "processNote": [
+          {
+            "number": 1,
+            "type": "display",
+            "text": "Prior authorization approved for lumbar MRI. Authorization valid for 90 days from approval date. Please ensure procedure is performed within authorized timeframe.",
+            "language": {
+              "coding": [
+                {
+                  "system": "urn:ietf:bcp:47",
+                  "code": "en-US",
+                  "display": "English (United States)"
+                }
+              ]
+            }
+          }
+        ],
+        "communicationRequest": [
+          {
+            "reference": "CommunicationRequest/prior-auth-notification"
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "http://fhir-iq.com/Patient/patient-example",
+      "resource": {
+        "resourceType": "Patient",
+        "id": "patient-example",
+        "meta": {
+          "profile": [
+            "http://hl7.org/fhir/us/core/StructureDefinition/us-core-patient"
+          ]
+        },
+        "identifier": [
+          {
+            "type": {
+              "coding": [
+                {
+                  "system": "http://terminology.hl7.org/CodeSystem/v2-0203",
+                  "code": "MR",
+                  "display": "Medical Record Number"
+                }
+              ]
+            },
+            "system": "http://provider-example.com/mrn",
+            "value": "MRN123456789"
+          }
+        ],
+        "active": true,
+        "name": [
+          {
+            "use": "official",
+            "family": "Patient",
+            "given": [
+              "Jane",
+              "Marie"
+            ]
+          }
+        ],
+        "telecom": [
+          {
+            "system": "phone",
+            "value": "555-123-4567",
+            "use": "home"
+          }
+        ],
+        "gender": "female",
+        "birthDate": "1985-03-15",
+        "address": [
+          {
+            "use": "home",
+            "line": [
+              "123 Main Street"
+            ],
+            "city": "Springfield",
+            "state": "IL",
+            "postalCode": "62701",
+            "country": "USA"
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "http://fhir-iq.com/Organization/payer-example",
+      "resource": {
+        "resourceType": "Organization",
+        "id": "payer-example",
+        "identifier": [
+          {
+            "system": "http://hl7.org/fhir/sid/us-npi",
+            "value": "9876543210"
+          }
+        ],
+        "active": true,
+        "type": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/organization-type",
+                "code": "ins",
+                "display": "Insurance Company"
+              }
+            ]
+          }
+        ],
+        "name": "FHIR IQ Health Insurance",
+        "telecom": [
+          {
+            "system": "phone",
+            "value": "800-555-0123"
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "http://fhir-iq.com/CommunicationRequest/prior-auth-notification",
+      "resource": {
+        "resourceType": "CommunicationRequest",
+        "id": "prior-auth-notification",
+        "status": "completed",
+        "category": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/communication-category",
+                "code": "notification",
+                "display": "Notification"
+              }
+            ]
+          }
+        ],
+        "priority": "routine",
+        "medium": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/v3-ParticipationMode",
+                "code": "WRITTEN",
+                "display": "written"
+              }
+            ]
+          }
+        ],
+        "subject": {
+          "reference": "Patient/patient-example"
+        },
+        "payload": [
+          {
+            "contentString": "Your prior authorization for lumbar MRI has been approved. Authorization number: AUTH-2025-092601-001. Valid until: December 26, 2025."
+          }
+        ],
+        "recipient": [
+          {
+            "reference": "Patient/patient-example"
+          }
+        ],
+        "sender": {
+          "reference": "Organization/payer-example"
+        }
+      }
+    }
+  ]
+}

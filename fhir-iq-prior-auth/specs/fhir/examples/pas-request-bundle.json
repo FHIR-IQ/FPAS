@@ -1,0 +1,498 @@
+{
+  "resourceType": "Bundle",
+  "id": "pas-request-example-lumbar-mri",
+  "meta": {
+    "profile": [
+      "http://hl7.org/fhir/us/davinci-pas/StructureDefinition/profile-pas-request-bundle"
+    ]
+  },
+  "identifier": {
+    "system": "http://fhir-iq.com/pas-bundle-identifier",
+    "value": "PAS-REQ-2024-001234"
+  },
+  "type": "collection",
+  "timestamp": "2024-09-26T10:30:00-05:00",
+  "entry": [
+    {
+      "fullUrl": "http://fhir-iq.com/Patient/patient-example-jane-doe",
+      "resource": {
+        "resourceType": "Patient",
+        "id": "patient-example-jane-doe",
+        "meta": {
+          "profile": [
+            "http://hl7.org/fhir/us/core/StructureDefinition/us-core-patient"
+          ]
+        },
+        "identifier": [
+          {
+            "use": "usual",
+            "type": {
+              "coding": [
+                {
+                  "system": "http://terminology.hl7.org/CodeSystem/v2-0203",
+                  "code": "MR",
+                  "display": "Medical Record Number"
+                }
+              ]
+            },
+            "system": "http://hospital.example.org/patients",
+            "value": "12345"
+          }
+        ],
+        "active": true,
+        "name": [
+          {
+            "use": "official",
+            "family": "Doe",
+            "given": [
+              "Jane",
+              "Elizabeth"
+            ]
+          }
+        ],
+        "telecom": [
+          {
+            "system": "phone",
+            "value": "555-123-4567",
+            "use": "home"
+          },
+          {
+            "system": "email",
+            "value": "jane.doe@example.com"
+          }
+        ],
+        "gender": "female",
+        "birthDate": "1985-03-15",
+        "address": [
+          {
+            "use": "home",
+            "type": "both",
+            "line": [
+              "123 Main Street"
+            ],
+            "city": "Anytown",
+            "state": "CA",
+            "postalCode": "90210",
+            "country": "US"
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "http://fhir-iq.com/Organization/provider-organization-spine-clinic",
+      "resource": {
+        "resourceType": "Organization",
+        "id": "provider-organization-spine-clinic",
+        "meta": {
+          "profile": [
+            "http://hl7.org/fhir/us/core/StructureDefinition/us-core-organization"
+          ]
+        },
+        "identifier": [
+          {
+            "use": "official",
+            "type": {
+              "coding": [
+                {
+                  "system": "http://terminology.hl7.org/CodeSystem/v2-0203",
+                  "code": "TAX",
+                  "display": "Tax ID number"
+                }
+              ]
+            },
+            "system": "urn:oid:2.16.840.1.113883.4.4",
+            "value": "12-3456789"
+          },
+          {
+            "use": "official",
+            "type": {
+              "coding": [
+                {
+                  "system": "http://terminology.hl7.org/CodeSystem/v2-0203",
+                  "code": "NPI",
+                  "display": "National Provider Identifier"
+                }
+              ]
+            },
+            "system": "http://hl7.org/fhir/sid/us-npi",
+            "value": "1234567890"
+          }
+        ],
+        "active": true,
+        "name": "Spine Care Medical Center",
+        "telecom": [
+          {
+            "system": "phone",
+            "value": "555-987-6543"
+          }
+        ],
+        "address": [
+          {
+            "line": [
+              "456 Healthcare Drive"
+            ],
+            "city": "Medical City",
+            "state": "CA",
+            "postalCode": "90211"
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "http://fhir-iq.com/Practitioner/practitioner-dr-smith",
+      "resource": {
+        "resourceType": "Practitioner",
+        "id": "practitioner-dr-smith",
+        "meta": {
+          "profile": [
+            "http://hl7.org/fhir/us/core/StructureDefinition/us-core-practitioner"
+          ]
+        },
+        "identifier": [
+          {
+            "use": "official",
+            "type": {
+              "coding": [
+                {
+                  "system": "http://terminology.hl7.org/CodeSystem/v2-0203",
+                  "code": "NPI",
+                  "display": "National Provider Identifier"
+                }
+              ]
+            },
+            "system": "http://hl7.org/fhir/sid/us-npi",
+            "value": "9876543210"
+          }
+        ],
+        "active": true,
+        "name": [
+          {
+            "use": "official",
+            "family": "Smith",
+            "given": [
+              "Robert",
+              "James"
+            ],
+            "prefix": [
+              "Dr."
+            ]
+          }
+        ],
+        "telecom": [
+          {
+            "system": "phone",
+            "value": "555-987-6543",
+            "use": "work"
+          }
+        ],
+        "qualification": [
+          {
+            "code": {
+              "coding": [
+                {
+                  "system": "http://nucc.org/provider-taxonomy",
+                  "code": "207X00000X",
+                  "display": "Orthopaedic Surgery"
+                }
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "http://fhir-iq.com/Coverage/coverage-jane-doe-aetna",
+      "resource": {
+        "resourceType": "Coverage",
+        "id": "coverage-jane-doe-aetna",
+        "meta": {
+          "profile": [
+            "http://hl7.org/fhir/us/davinci-pas/StructureDefinition/profile-coverage"
+          ]
+        },
+        "identifier": [
+          {
+            "system": "http://aetna.com/member-id",
+            "value": "AETNA12345678"
+          }
+        ],
+        "status": "active",
+        "type": {
+          "coding": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ActCode",
+              "code": "EHCPOL",
+              "display": "extended healthcare"
+            }
+          ]
+        },
+        "subscriber": {
+          "reference": "Patient/patient-example-jane-doe"
+        },
+        "beneficiary": {
+          "reference": "Patient/patient-example-jane-doe"
+        },
+        "dependent": "01",
+        "relationship": {
+          "coding": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/subscriber-relationship",
+              "code": "self"
+            }
+          ]
+        },
+        "period": {
+          "start": "2024-01-01",
+          "end": "2024-12-31"
+        },
+        "payor": [
+          {
+            "reference": "Organization/aetna-health-plan"
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "http://fhir-iq.com/Organization/aetna-health-plan",
+      "resource": {
+        "resourceType": "Organization",
+        "id": "aetna-health-plan",
+        "identifier": [
+          {
+            "use": "official",
+            "system": "http://hl7.org/fhir/sid/us-npi",
+            "value": "1122334455"
+          }
+        ],
+        "active": true,
+        "name": "Aetna Health Plan",
+        "telecom": [
+          {
+            "system": "phone",
+            "value": "1-800-AETNA-55"
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "http://fhir-iq.com/QuestionnaireResponse/dtr-response-lumbar-mri",
+      "resource": {
+        "resourceType": "QuestionnaireResponse",
+        "id": "dtr-response-lumbar-mri",
+        "meta": {
+          "profile": [
+            "http://hl7.org/fhir/us/davinci-dtr/StructureDefinition/dtr-questionnaireresponse"
+          ]
+        },
+        "questionnaire": "http://fhir-iq.com/Questionnaire/imaging-lumbar-mri",
+        "status": "completed",
+        "subject": {
+          "reference": "Patient/patient-example-jane-doe"
+        },
+        "authored": "2024-09-26T10:25:00-05:00",
+        "author": {
+          "reference": "Practitioner/practitioner-dr-smith"
+        },
+        "item": [
+          {
+            "linkId": "conservative-therapy",
+            "text": "Has the patient tried conservative therapy for at least 6 weeks?",
+            "answer": [
+              {
+                "valueBoolean": true
+              }
+            ]
+          },
+          {
+            "linkId": "conservative-therapy-details",
+            "text": "What conservative treatments were tried?",
+            "answer": [
+              {
+                "valueString": "Physical therapy for 8 weeks, NSAIDs, muscle relaxants"
+              }
+            ]
+          },
+          {
+            "linkId": "neurologic-deficit",
+            "text": "Does the patient have neurologic deficits?",
+            "answer": [
+              {
+                "valueBoolean": true
+              }
+            ]
+          },
+          {
+            "linkId": "neurologic-deficit-details",
+            "text": "Describe the neurologic deficits",
+            "answer": [
+              {
+                "valueString": "Weakness in left leg, numbness in L5 distribution, positive straight leg raise test"
+              }
+            ]
+          },
+          {
+            "linkId": "symptom-duration",
+            "text": "How long has the patient had symptoms?",
+            "answer": [
+              {
+                "valueQuantity": {
+                  "value": 12,
+                  "unit": "weeks",
+                  "system": "http://unitsofmeasure.org",
+                  "code": "wk"
+                }
+              }
+            ]
+          },
+          {
+            "linkId": "imaging-reason",
+            "text": "Primary reason for MRI request",
+            "answer": [
+              {
+                "valueCoding": {
+                  "system": "http://snomed.info/sct",
+                  "code": "279039007",
+                  "display": "Low back pain"
+                }
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "http://fhir-iq.com/Claim/pa-request-lumbar-mri",
+      "resource": {
+        "resourceType": "Claim",
+        "id": "pa-request-lumbar-mri",
+        "meta": {
+          "profile": [
+            "http://hl7.org/fhir/us/davinci-pas/StructureDefinition/profile-claim"
+          ]
+        },
+        "identifier": [
+          {
+            "system": "http://spine-clinic.example.org/claim-id",
+            "value": "CLAIM-2024-LUM-001234"
+          }
+        ],
+        "status": "active",
+        "type": {
+          "coding": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/claim-type",
+              "code": "professional",
+              "display": "Professional"
+            }
+          ]
+        },
+        "use": "preauthorization",
+        "patient": {
+          "reference": "Patient/patient-example-jane-doe"
+        },
+        "created": "2024-09-26T10:30:00-05:00",
+        "provider": {
+          "reference": "Organization/provider-organization-spine-clinic"
+        },
+        "priority": {
+          "coding": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/processpriority",
+              "code": "normal"
+            }
+          ]
+        },
+        "supportingInfo": [
+          {
+            "sequence": 1,
+            "category": {
+              "coding": [
+                {
+                  "system": "http://hl7.org/fhir/us/davinci-pas/CodeSystem/PASSupportingInfoType",
+                  "code": "questionnaire-response",
+                  "display": "Questionnaire Response"
+                }
+              ]
+            },
+            "valueReference": {
+              "reference": "QuestionnaireResponse/dtr-response-lumbar-mri"
+            }
+          }
+        ],
+        "diagnosis": [
+          {
+            "sequence": 1,
+            "diagnosisCodeableConcept": {
+              "coding": [
+                {
+                  "system": "http://hl7.org/fhir/sid/icd-10-cm",
+                  "code": "M54.5",
+                  "display": "Low back pain"
+                }
+              ]
+            },
+            "type": [
+              {
+                "coding": [
+                  {
+                    "system": "http://terminology.hl7.org/CodeSystem/ex-diagnosistype",
+                    "code": "principal"
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "insurance": [
+          {
+            "sequence": 1,
+            "focal": true,
+            "coverage": {
+              "reference": "Coverage/coverage-jane-doe-aetna"
+            }
+          }
+        ],
+        "item": [
+          {
+            "sequence": 1,
+            "category": {
+              "coding": [
+                {
+                  "system": "http://terminology.hl7.org/CodeSystem/ex-benefitcategory",
+                  "code": "medical",
+                  "display": "Medical Care"
+                }
+              ]
+            },
+            "productOrService": {
+              "coding": [
+                {
+                  "system": "http://www.ama-assn.org/go/cpt",
+                  "code": "72148",
+                  "display": "Magnetic resonance (eg, proton) imaging, spinal canal and contents, lumbar; without contrast material"
+                }
+              ]
+            },
+            "servicedDate": "2024-10-15",
+            "locationCodeableConcept": {
+              "coding": [
+                {
+                  "system": "https://www.cms.gov/Medicare/Coding/place-of-service-codes/Place_of_Service_Code_Set",
+                  "code": "22",
+                  "display": "On Campus-Outpatient Hospital"
+                }
+              ]
+            },
+            "quantity": {
+              "value": 1
+            },
+            "net": {
+              "value": 1200.00,
+              "currency": "USD"
+            }
+          }
+        ]
+      }
+    }
+  ]
+}

@@ -1,0 +1,286 @@
+{
+  "resourceType": "CapabilityStatement",
+  "id": "payer-pas-server",
+  "url": "http://fhir-iq.com/CapabilityStatement/payer-pas-server",
+  "version": "2.0.1",
+  "name": "PayerPASServerCapabilityStatement",
+  "title": "Payer Prior Authorization Support Server Capability Statement",
+  "status": "active",
+  "experimental": false,
+  "date": "2024-12-15",
+  "publisher": "FHIR IQ Prior Authorization POC",
+  "contact": [
+    {
+      "name": "FHIR IQ Integration Team",
+      "telecom": [
+        {
+          "system": "email",
+          "value": "integration@fhir-iq.com"
+        }
+      ]
+    }
+  ],
+  "description": "Capability Statement for FHIR IQ Prior Authorization Support (PAS) server implementing Da Vinci PAS and DTR IGs for CMS-0057-F compliance. Demonstrates PA API, Patient Access API, Provider Access API, and Payer-to-Payer bulk data patterns required by CMS API compliance deadline of January 1, 2027.",
+  "jurisdiction": [
+    {
+      "coding": [
+        {
+          "system": "urn:iso:std:iso:3166",
+          "code": "US",
+          "display": "United States of America"
+        }
+      ]
+    }
+  ],
+  "kind": "instance",
+  "software": {
+    "name": "FHIR IQ PAS Server",
+    "version": "1.0.0-poc",
+    "releaseDate": "2025-09-26"
+  },
+  "implementation": {
+    "description": "FHIR IQ POC Prior Authorization Support server",
+    "url": "https://pas-api.fhir-iq.com/fhir"
+  },
+  "fhirVersion": "4.0.1",
+  "format": [
+    "application/fhir+json"
+  ],
+  "patchFormat": [
+    "application/json-patch+json"
+  ],
+  "implementationGuide": [
+    "http://hl7.org/fhir/us/davinci-pas/ImplementationGuide/hl7.fhir.us.davinci-pas|2.0.1",
+    "http://hl7.org/fhir/us/davinci-dtr/ImplementationGuide/hl7.fhir.us.davinci-dtr|2.0.1",
+    "http://hl7.org/fhir/us/davinci-hrex/ImplementationGuide/hl7.fhir.us.davinci-hrex|1.1.0",
+    "http://hl7.org/fhir/us/core/ImplementationGuide/hl7.fhir.us.core|6.1.0"
+  ],
+  "rest": [
+    {
+      "mode": "server",
+      "documentation": "FHIR IQ Prior Authorization Support Server with DTR integration",
+      "security": {
+        "cors": true,
+        "service": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/restful-security-service",
+                "code": "OAuth",
+                "display": "OAuth2"
+              }
+            ],
+            "text": "OAuth2 with SMART on FHIR v2 scopes"
+          }
+        ],
+        "description": "OAuth2 implementation with SMART backend services and patient/provider access"
+      },
+      "resource": [
+        {
+          "type": "Claim",
+          "profile": "http://hl7.org/fhir/us/davinci-pas/StructureDefinition/profile-claim",
+          "documentation": "Prior authorization requests submitted as Claim resources",
+          "interaction": [
+            {
+              "code": "read",
+              "documentation": "Read prior authorization request"
+            },
+            {
+              "code": "search-type",
+              "documentation": "Search prior authorization requests"
+            }
+          ],
+          "searchParam": [
+            {
+              "name": "patient",
+              "definition": "http://hl7.org/fhir/SearchParameter/Claim-patient",
+              "type": "reference",
+              "documentation": "Patient receiving the services"
+            },
+            {
+              "name": "status",
+              "definition": "http://hl7.org/fhir/SearchParameter/Claim-status",
+              "type": "token",
+              "documentation": "The status of the claim"
+            },
+            {
+              "name": "created",
+              "definition": "http://hl7.org/fhir/SearchParameter/Claim-created",
+              "type": "date",
+              "documentation": "The creation date for the claim"
+            }
+          ]
+        },
+        {
+          "type": "ClaimResponse",
+          "profile": "http://hl7.org/fhir/us/davinci-pas/StructureDefinition/profile-claimresponse",
+          "documentation": "Prior authorization responses",
+          "interaction": [
+            {
+              "code": "read",
+              "documentation": "Read prior authorization response"
+            },
+            {
+              "code": "search-type",
+              "documentation": "Search prior authorization responses"
+            }
+          ],
+          "searchParam": [
+            {
+              "name": "request",
+              "definition": "http://hl7.org/fhir/SearchParameter/ClaimResponse-request",
+              "type": "reference",
+              "documentation": "The claim reference"
+            },
+            {
+              "name": "outcome",
+              "definition": "http://hl7.org/fhir/SearchParameter/ClaimResponse-outcome",
+              "type": "token",
+              "documentation": "The processing outcome"
+            }
+          ]
+        },
+        {
+          "type": "Bundle",
+          "documentation": "Bundles for prior authorization transactions and DTR responses",
+          "interaction": [
+            {
+              "code": "create",
+              "documentation": "Submit prior authorization bundle"
+            },
+            {
+              "code": "read",
+              "documentation": "Read bundle"
+            }
+          ]
+        },
+        {
+          "type": "Questionnaire",
+          "documentation": "DTR questionnaires for documentation requirements",
+          "interaction": [
+            {
+              "code": "read",
+              "documentation": "Read questionnaire"
+            },
+            {
+              "code": "search-type",
+              "documentation": "Search questionnaires"
+            }
+          ],
+          "searchParam": [
+            {
+              "name": "url",
+              "definition": "http://hl7.org/fhir/SearchParameter/Questionnaire-url",
+              "type": "uri",
+              "documentation": "The uri that identifies the questionnaire"
+            },
+            {
+              "name": "context",
+              "definition": "http://hl7.org/fhir/SearchParameter/Questionnaire-context",
+              "type": "token",
+              "documentation": "A use context assigned to the questionnaire"
+            }
+          ]
+        },
+        {
+          "type": "QuestionnaireResponse",
+          "documentation": "Completed DTR questionnaire responses",
+          "interaction": [
+            {
+              "code": "create",
+              "documentation": "Create questionnaire response"
+            },
+            {
+              "code": "read",
+              "documentation": "Read questionnaire response"
+            },
+            {
+              "code": "search-type",
+              "documentation": "Search questionnaire responses"
+            }
+          ],
+          "searchParam": [
+            {
+              "name": "questionnaire",
+              "definition": "http://hl7.org/fhir/SearchParameter/QuestionnaireResponse-questionnaire",
+              "type": "reference",
+              "documentation": "The questionnaire the answers are provided for"
+            },
+            {
+              "name": "subject",
+              "definition": "http://hl7.org/fhir/SearchParameter/QuestionnaireResponse-subject",
+              "type": "reference",
+              "documentation": "The subject of the questionnaire response"
+            }
+          ]
+        },
+        {
+          "type": "Patient",
+          "profile": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-patient",
+          "documentation": "Patient demographics for authorization context",
+          "interaction": [
+            {
+              "code": "read",
+              "documentation": "Read patient"
+            }
+          ]
+        },
+        {
+          "type": "Coverage",
+          "documentation": "Insurance coverage information",
+          "interaction": [
+            {
+              "code": "read",
+              "documentation": "Read coverage"
+            }
+          ]
+        },
+        {
+          "type": "Task",
+          "documentation": "Tasks for tracking async prior authorization workflow",
+          "interaction": [
+            {
+              "code": "read",
+              "documentation": "Read task"
+            },
+            {
+              "code": "search-type",
+              "documentation": "Search tasks"
+            }
+          ],
+          "searchParam": [
+            {
+              "name": "status",
+              "definition": "http://hl7.org/fhir/SearchParameter/Task-status",
+              "type": "token",
+              "documentation": "Task status"
+            },
+            {
+              "name": "focus",
+              "definition": "http://hl7.org/fhir/SearchParameter/Task-focus",
+              "type": "reference",
+              "documentation": "What task is about (Claim)"
+            }
+          ]
+        }
+      ],
+      "operation": [
+        {
+          "name": "submit",
+          "definition": "http://fhir-iq.com/OperationDefinition/Claim-submit",
+          "documentation": "Submit a PAS request Bundle; returns ClaimResponse Bundle."
+        },
+        {
+          "name": "inquire",
+          "definition": "http://fhir-iq.com/OperationDefinition/Claim-inquire",
+          "documentation": "Check status of existing PA."
+        },
+        {
+          "name": "populate",
+          "definition": "http://hl7.org/fhir/uv/sdc/OperationDefinition/Questionnaire-populate",
+          "documentation": "Prepopulate questionnaire with patient data via CQL"
+        }
+      ]
+    }
+  ]
+}

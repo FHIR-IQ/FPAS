@@ -1,0 +1,61 @@
+{
+  "resourceType": "OperationDefinition",
+  "id": "Claim-submit",
+  "url": "http://fhir-iq.com/OperationDefinition/Claim-submit",
+  "version": "1.0.0",
+  "name": "ClaimSubmit",
+  "title": "Submit Prior Authorization Request",
+  "status": "draft",
+  "kind": "operation",
+  "experimental": true,
+  "date": "2025-09-26",
+  "publisher": "FHIR IQ Prior Authorization POC",
+  "contact": [
+    {
+      "name": "FHIR IQ Integration Team",
+      "telecom": [
+        {
+          "system": "email",
+          "value": "integration@fhir-iq.com"
+        }
+      ]
+    }
+  ],
+  "description": "Submit a prior authorization request Bundle containing a Claim resource and supporting documentation for processing by the payer. This POC implementation supports both synchronous and asynchronous processing based on the complexity of the request.",
+  "jurisdiction": [
+    {
+      "coding": [
+        {
+          "system": "urn:iso:std:iso:3166",
+          "code": "US"
+        }
+      ]
+    }
+  ],
+  "code": "submit",
+  "comment": "This operation follows the Da Vinci PAS implementation guide patterns. The request Bundle must contain a Claim resource as the primary entry along with all referenced supporting resources (Patient, Coverage, Organization, etc.). The response will be synchronous for auto-approvable requests or asynchronous with a Task for manual review.",
+  "resource": [
+    "Claim"
+  ],
+  "system": false,
+  "type": true,
+  "instance": false,
+  "parameter": [
+    {
+      "name": "request",
+      "use": "in",
+      "min": 1,
+      "max": "1",
+      "documentation": "The Prior Authorization Request Bundle containing the Claim and all supporting resources conforming to PAS profiles",
+      "type": "Bundle"
+    },
+    {
+      "name": "response",
+      "use": "out",
+      "min": 1,
+      "max": "1",
+      "documentation": "The Prior Authorization Response Bundle containing either: 1) ClaimResponse with final determination for synchronous processing, or 2) Task resource for asynchronous processing with polling instructions",
+      "type": "Bundle"
+    }
+  ]
+}
