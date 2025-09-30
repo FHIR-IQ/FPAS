@@ -141,6 +141,40 @@ export async function buildApp() {
   const dtrLaunchRoutes = new DTRLaunchRoutes(dtrPrepopulationService);
   await dtrLaunchRoutes.register(app);
 
+  // Root endpoint - API information
+  app.get('/', async (_request, _reply) => {
+    return {
+      resourceType: 'CapabilityStatement',
+      status: 'active',
+      date: new Date().toISOString(),
+      kind: 'instance',
+      software: {
+        name: 'FHIR IQ Prior Authorization System (FPAS)',
+        version: '1.0.0'
+      },
+      implementation: {
+        description: 'POC implementation of Da Vinci PAS, DTR, and Patient Access APIs',
+        url: config.app.baseUrl
+      },
+      fhirVersion: '4.0.1',
+      format: ['application/fhir+json'],
+      rest: [{
+        mode: 'server',
+        documentation: 'FHIR R4 endpoints for prior authorization workflows',
+        resource: [
+          { type: 'Claim', documentation: 'Prior authorization requests' },
+          { type: 'ClaimResponse', documentation: 'Prior authorization responses' },
+          { type: 'Questionnaire', documentation: 'DTR questionnaires' },
+          { type: 'QuestionnaireResponse', documentation: 'DTR questionnaire responses' }
+        ]
+      }],
+      document: [{
+        mode: 'consumer',
+        documentation: 'See /fhir/metadata for full FHIR CapabilityStatement'
+      }]
+    };
+  });
+
   // Health check endpoint
   app.get('/health', async (_request, _reply) => {
     return {
