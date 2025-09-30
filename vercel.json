@@ -1,8 +1,17 @@
 {
   "version": 2,
-  "buildCommand": "cd fhir-iq-prior-auth/implementation && npm run build",
-  "devCommand": "cd fhir-iq-prior-auth/implementation && npm run dev",
+  "buildCommand": "cd fhir-iq-prior-auth/implementation && npm install && npm run build",
   "installCommand": "cd fhir-iq-prior-auth/implementation && npm install",
-  "framework": null,
-  "outputDirectory": "fhir-iq-prior-auth/implementation/dist"
+  "builds": [
+    {
+      "src": "fhir-iq-prior-auth/implementation/api/index.ts",
+      "use": "@vercel/node"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/(.*)",
+      "dest": "fhir-iq-prior-auth/implementation/api/index.ts"
+    }
+  ]
 }
