@@ -61,7 +61,7 @@ export async function buildApp() {
             display: 'API rate limit exceeded'
           }]
         },
-        diagnostics: `Rate limit of ${context.max} requests per ${context.timeWindow}ms exceeded. Retry after ${Math.ceil(context.ttl / 1000)} seconds.`
+        diagnostics: `Rate limit of ${(context as any).max} requests per window exceeded. Retry after ${Math.ceil((context as any).ttl / 1000)} seconds.`
       }]
     })
   });
@@ -142,7 +142,7 @@ export async function buildApp() {
   await dtrLaunchRoutes.register(app);
 
   // Health check endpoint
-  app.get('/health', async (request, reply) => {
+  app.get('/health', async (_request, _reply) => {
     return {
       status: 'healthy',
       timestamp: new Date().toISOString(),

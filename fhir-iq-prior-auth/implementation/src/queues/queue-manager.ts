@@ -28,10 +28,9 @@ export class QueueManager {
     // Initialize Redis connection
     this.redis = new Redis(config.redis.url, {
       maxRetriesPerRequest: 3,
-      retryDelayOnFailover: 100,
       enableReadyCheck: false,
       lazyConnect: true
-    });
+    }) as any;
 
     // Initialize PAS processing queue
     const queueOptions: QueueOptions = {
@@ -246,7 +245,7 @@ export class QueueManager {
       });
     });
 
-    this.pasWorker.on('completed', (job, returnvalue) => {
+    this.pasWorker.on('completed', (job, _returnvalue) => {
       logger.info('Job completed successfully', {
         jobId: job.id,
         claimId: job.data.claimId,

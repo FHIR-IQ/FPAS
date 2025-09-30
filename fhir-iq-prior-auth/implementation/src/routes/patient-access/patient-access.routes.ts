@@ -94,7 +94,7 @@ export class PatientAccessRoutes {
   /**
    * Get all patient data ($everything operation)
    */
-  private async getPatientEverything(request: PatientAccessRequest, reply: FastifyReply): Promise<Bundle> {
+  private async getPatientEverything(request: PatientAccessRequest, _reply: FastifyReply): Promise<Bundle> {
     const patientId = request.params.id;
     const since = request.query._since;
 
@@ -184,7 +184,7 @@ export class PatientAccessRoutes {
   /**
    * Get specific coverage by ID
    */
-  private async getCoverageById(request: PatientAccessRequest, reply: FastifyReply): Promise<Coverage> {
+  private async getCoverageById(request: PatientAccessRequest, _reply: FastifyReply): Promise<Coverage> {
     const coverageId = request.params.id;
 
     logger.info('Coverage read request', { coverageId });
@@ -261,7 +261,7 @@ export class PatientAccessRoutes {
   /**
    * Get specific claim by ID
    */
-  private async getClaimById(request: PatientAccessRequest, reply: FastifyReply): Promise<Claim> {
+  private async getClaimById(request: PatientAccessRequest, _reply: FastifyReply): Promise<Claim> {
     const claimId = request.params.id;
 
     logger.info('Claim read request', { claimId });
@@ -336,7 +336,7 @@ export class PatientAccessRoutes {
   /**
    * Get specific claim response by ID
    */
-  private async getClaimResponseById(request: PatientAccessRequest, reply: FastifyReply): Promise<ClaimResponse> {
+  private async getClaimResponseById(request: PatientAccessRequest, _reply: FastifyReply): Promise<ClaimResponse> {
     const claimResponseId = request.params.id;
 
     logger.info('ClaimResponse read request', { claimResponseId });
@@ -407,7 +407,7 @@ export class PatientAccessRoutes {
   /**
    * Get specific explanation of benefit by ID
    */
-  private async getExplanationOfBenefitById(request: PatientAccessRequest, reply: FastifyReply): Promise<ExplanationOfBenefit> {
+  private async getExplanationOfBenefitById(request: PatientAccessRequest, _reply: FastifyReply): Promise<ExplanationOfBenefit> {
     const eobId = request.params.id;
 
     logger.info('ExplanationOfBenefit read request', { eobId });
@@ -463,7 +463,7 @@ export class PatientAccessRoutes {
     }
   }
 
-  private async buildPatientEverythingBundle(patientId: string, since?: string): Promise<Bundle> {
+  private async buildPatientEverythingBundle(patientId: string, _since?: string): Promise<Bundle> {
     const entries: any[] = [];
 
     // Add patient resource
@@ -570,7 +570,7 @@ export class PatientAccessRoutes {
     ];
   }
 
-  private generateSampleClaims(patientId: string, status?: string, date?: string): Claim[] {
+  private generateSampleClaims(patientId: string, status?: string, date?: string): any[] {
     return [
       {
         resourceType: 'Claim',
@@ -585,6 +585,8 @@ export class PatientAccessRoutes {
           }
         ],
         status: status as any || 'active',
+        insurance: [],
+        priority: { coding: [{ code: 'normal' }] },
         type: {
           coding: [{
             system: 'http://terminology.hl7.org/CodeSystem/claim-type',
@@ -613,7 +615,7 @@ export class PatientAccessRoutes {
             quantity: { value: 1 }
           }
         ]
-      }
+      } as any
     ];
   }
 
@@ -654,11 +656,12 @@ export class PatientAccessRoutes {
     ];
   }
 
-  private generateSampleExplanationOfBenefits(patientId: string): ExplanationOfBenefit[] {
+  private generateSampleExplanationOfBenefits(patientId: string): any[] {
     return [
       {
         resourceType: 'ExplanationOfBenefit',
         id: `eob-${patientId}`,
+        insurance: [],
         meta: {
           profile: ['http://hl7.org/fhir/us/davinci-pdex/StructureDefinition/pdex-explanationofbenefit']
         },
@@ -688,7 +691,7 @@ export class PatientAccessRoutes {
           reference: 'Practitioner/practitioner-1'
         },
         outcome: 'complete'
-      }
+      } as any
     ];
   }
 }
