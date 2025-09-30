@@ -156,8 +156,17 @@ export async function buildApp() {
     };
   });
 
-  // Initialize background queues
-  await initializeQueues();
+  // Initialize background queues (optional in POC/serverless mode)
+  try {
+    if (config.redis.url && config.redis.url !== 'redis://localhost:6379') {
+      await initializeQueues();
+      logger.info('Background queues initialized successfully');
+    } else {
+      logger.warn('Redis not configured - background job processing disabled (running in POC mode)');
+    }
+  } catch (error) {
+    logger.warn('Failed to initialize background queues - running without async processing', error);
+  }
 
   return app;
 }
@@ -198,6 +207,9 @@ async function checkFHIRServerHealth(): Promise<{ status: string; url: string }>
 
 async function checkRedisHealth(): Promise<{ status: string; url: string }> {
   try {
+    if (!config.redis.url || config.redis.url === 'redis://localhost:6379') {
+      return { status: 'disabled', url: 'not configured (POC mode)' };
+    }
     // Implementation would ping Redis
     return { status: 'healthy', url: config.redis.url };
   } catch (error) {
@@ -207,6 +219,9 @@ async function checkRedisHealth(): Promise<{ status: string; url: string }> {
 
 async function checkDatabaseHealth(): Promise<{ status: string; url: string }> {
   try {
+    if (!config.database.url || config.database.url === 'postgresql://localhost:5432/fhir') {
+      return { status: 'disabled', url: 'not configured (POC mode)' };
+    }
     // Implementation would check database connection
     return { status: 'healthy', url: config.database.url };
   } catch (error) {
