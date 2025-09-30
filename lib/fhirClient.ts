@@ -1,7 +1,8 @@
 import { config } from './config';
 
-export interface FhirFetchOptions extends RequestInit {
+export interface FhirFetchOptions extends Omit<RequestInit, 'body'> {
   token?: string;
+  body?: any; // Allow any JSON object for body
 }
 
 export interface FhirResponse<T = any> {
@@ -18,7 +19,7 @@ export async function fhirFetch<T = any>(
   path: string,
   init?: FhirFetchOptions
 ): Promise<FhirResponse<T>> {
-  const { token, ...fetchInit } = init || {};
+  const { token, body, ...fetchInit } = init || {};
 
   const url = path.startsWith('http') ? path : `${config.fhirBase}${path}`;
 
@@ -30,10 +31,14 @@ export async function fhirFetch<T = any>(
     headers.set('Authorization', `Bearer ${token}`);
   }
 
+  // Stringify body if it's an object
+  const requestBody = body && typeof body === 'object' ? JSON.stringify(body) : body;
+
   try {
     const response = await fetch(url, {
       ...fetchInit,
       headers,
+      body: requestBody,
     });
 
     let json = null;

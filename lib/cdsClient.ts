@@ -1,7 +1,8 @@
 import { config } from './config';
 
-export interface CdsClientOptions extends RequestInit {
+export interface CdsClientOptions extends Omit<RequestInit, 'body'> {
   token?: string;
+  body?: any; // Allow any JSON object for body
 }
 
 export interface CdsResponse<T = any> {
@@ -18,7 +19,7 @@ export async function cdsFetch<T = any>(
   path: string,
   init?: CdsClientOptions
 ): Promise<CdsResponse<T>> {
-  const { token, ...fetchInit } = init || {};
+  const { token, body, ...fetchInit } = init || {};
 
   const url = path.startsWith('http') ? path : `${config.cdsBase}${path}`;
 
@@ -30,10 +31,14 @@ export async function cdsFetch<T = any>(
     headers.set('Authorization', `Bearer ${token}`);
   }
 
+  // Stringify body if it's an object
+  const requestBody = body && typeof body === 'object' ? JSON.stringify(body) : body;
+
   try {
     const response = await fetch(url, {
       ...fetchInit,
       headers,
+      body: requestBody,
     });
 
     let json = null;

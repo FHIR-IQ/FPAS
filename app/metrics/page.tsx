@@ -96,10 +96,11 @@ export default function MetricsPage() {
   const [pended, setPended] = useState(0);
   const [denied, setDenied] = useState(0);
   const [avgLatency, setAvgLatency] = useState(0);
-  const [latencyData, setLatencyData] = useState<Array<{ time: string; latency: number }>>([]);
+  const [latencyData, setLatencyData] = useState<Array<{ ts: number; ms: number }>>([]);
 
   useEffect(() => {
     calculateMetrics();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [events]);
 
   const calculateMetrics = () => {
@@ -118,8 +119,8 @@ export default function MetricsPage() {
     // Latency over time (last 10 events)
     const recentEvents = [...events].sort((a, b) => a.timestamp.getTime() - b.timestamp.getTime()).slice(-10);
     const latencyTimeSeries = recentEvents.map((e) => ({
-      time: e.timestamp.toLocaleTimeString(),
-      latency: e.latencyMs,
+      ts: e.timestamp.getTime(),
+      ms: e.latencyMs,
     }));
     setLatencyData(latencyTimeSeries);
   };
