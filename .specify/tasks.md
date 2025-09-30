@@ -60,12 +60,15 @@
 - [x] Nice OperationOutcome cards (severity-based rendering)
 - [x] Loading states (disabled buttons, loading text)
 - [x] Responsive design (desktop/tablet with grid layouts)
-- [ ] README quickstart with demo script
+- [x] README quickstart with comprehensive demo scripts for all 6 pages
 - [x] Seed examples (pas-approve/pend/deny, cds-order-select/sign)
+- [x] CORS proxy configuration (vercel.json with rewrites)
+- [x] Troubleshooting guide (CORS, 404, tokens, examples)
+- [x] Mock token documentation and configuration
 
 ## Phase 9: Deployment
-- [ ] Vercel project setup
-- [ ] Environment variables
+- [x] Vercel configuration (vercel.json with API proxies)
+- [x] Environment variables (.env.example with all options)
 - [ ] CI lint/build check (typecheck, build, lint)
-- [ ] Deploy preview
+- [ ] Deploy preview to Vercel
 - [ ] Production deployment
