@@ -6,6 +6,10 @@ import { config } from '../config/environment';
  */
 export function validateEnvironment(): void {
   const errors: string[] = [];
+  const warnings: string[] = [];
+
+  // Check if running in Vercel POC environment
+  const isVercelPOC = process.env.VERCEL === '1' || process.env.NODE_ENV === 'production';
 
   // Validate critical settings
   if (!config.app.port || isNaN(config.app.port)) {
@@ -13,22 +17,32 @@ export function validateEnvironment(): void {
   }
 
   if (!config.fhir.baseUrl) {
-    errors.push('FHIR_BASE_URL is required');
+    if (isVercelPOC) {
+      warnings.push('FHIR_BASE_URL not set - using default mock endpoints');
+    } else {
+      errors.push('FHIR_BASE_URL is required');
+    }
   }
 
   if (!config.redis.url) {
-    errors.push('REDIS_URL is required');
+    if (isVercelPOC) {
+      warnings.push('REDIS_URL not set - background job processing disabled');
+    } else {
+      errors.push('REDIS_URL is required');
+    }
   }
 
   // Validate security settings in production
-  if (config.app.nodeEnv === 'production') {
+  if (config.app.nodeEnv === 'production' && !isVercelPOC) {
     if (config.security.jwtSecret === 'poc-jwt-secret-change-in-production') {
       errors.push('JWT_SECRET must be changed in production environment');
     }
 
     if (config.security.cors.origin === '*') {
-      console.warn('WARNING: CORS is set to allow all origins (*) in production. Consider restricting this.');
+      warnings.push('CORS is set to allow all origins (*) in production. Consider restricting this.');
     }
+  } else if (isVercelPOC) {
+    warnings.push('Running in POC mode with default security settings - not suitable for production');
   }
 
   // Validate Redis configuration
@@ -58,6 +72,12 @@ export function validateEnvironment(): void {
     );
   }
 
+  // Log warnings
+  if (warnings.length > 0 && config.app.nodeEnv !== 'test') {
+    console.warn('Environment validation warnings:');
+    warnings.forEach(w => console.warn(`  - ${w}`));
+  }
+
   // Log successful validation
   if (config.app.nodeEnv !== 'test') {
     console.log('Environment validation passed');
@@ -66,5 +86,8 @@ export function validateEnvironment(): void {
     console.log(`  - FHIR base URL: ${config.fhir.baseUrl}`);
     console.log(`  - Redis URL: ${config.redis.url}`);
     console.log(`  - Swagger UI: ${config.features.enableSwaggerUI ? 'enabled' : 'disabled'}`);
+    if (isVercelPOC) {
+      console.log('  - Running in Vercel POC mode');
+    }
   }
 }
