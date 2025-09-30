@@ -1,70 +1,71 @@
 # FPAS UI — Implementation Tasks
 
 ## Phase 1: Foundation
-- [ ] Bootstrap Next.js + Tailwind
-- [ ] Add .env.example with FPAS URLs
-- [ ] Create left-rail nav component
-- [ ] Build TokenSwitcher (mock patient/provider/system)
-- [ ] Set up Tailwind config and globals
+- [x] Bootstrap Next.js + Tailwind
+- [x] Add .env.example with FPAS URLs
+- [x] Create left-rail nav component (Sidebar)
+- [x] Build TokenSwitcher (mock patient/provider/system)
+- [x] Set up Tailwind config and globals
 
 ## Phase 2: PAS Tester (`/pas`)
-- [ ] JSON editor with Monaco
-- [ ] Example selector (approve/pend/deny)
-- [ ] Validate → Submit → Inquire → Cancel flow
-- [ ] Timeline visualization
-- [ ] Pretty response viewer
-- [ ] OperationOutcome card renderer
-- [ ] Copyable cURL generation
+- [x] JSON editor with Monaco
+- [x] Example selector (approve/pend/deny)
+- [x] Validate → Submit → Inquire → Cancel flow
+- [x] Timeline visualization
+- [x] Pretty response viewer
+- [x] OperationOutcome card renderer
+- [x] Copyable cURL generation
 
 ## Phase 3: DTR Runner (`/dtr`)
-- [ ] Fetch Questionnaire by ID
-- [ ] Simple question renderer (string, boolean, choice)
-- [ ] Build QuestionnaireResponse
-- [ ] Attach to PAS bundle button
-- [ ] Show combined submission
+- [x] Fetch Questionnaire by ID
+- [x] Simple question renderer (string, boolean, choice, text)
+- [x] Build QuestionnaireResponse
+- [x] Attach to PAS bundle button
+- [x] Show combined submission
 
 ## Phase 4: CDS Hooks Playground (`/cds`)
-- [ ] Service discovery endpoint call
-- [ ] order-select / order-sign editor
-- [ ] Context builder (patient, encounter, draftOrders)
-- [ ] Card renderer (info/warning/critical)
-- [ ] Link and suggestion actions
-- [ ] Request/response inspection
+- [x] Service discovery endpoint call
+- [x] order-select / order-sign editor
+- [x] Context builder (patient, encounter, draftOrders) - via examples
+- [x] Card renderer (info/warning/critical)
+- [x] Link and suggestion actions
+- [x] Request/response inspection
 
 ## Phase 5: Access Viewer (`/access`)
-- [ ] Patient picker dropdown
-- [ ] $everything operation call
-- [ ] Claim search with filters
-- [ ] Coverage display
-- [ ] Scope toggle (patient vs provider)
-- [ ] Results table
+- [x] Patient ID input field
+- [x] $everything operation call
+- [x] Claim search with filters (patient, service type)
+- [x] Coverage display
+- [x] Scope toggle (patient vs provider vs system)
+- [x] Results viewer with ResponseViewer
 
 ## Phase 6: Bulk Simulator (`/bulk`)
-- [ ] Start $export form
-- [ ] Poll status endpoint
-- [ ] Progress indicator
-- [ ] List NDJSON files
-- [ ] Preview first N rows
-- [ ] Download links
+- [x] Start $export form (Group ID, resource types, _since)
+- [x] Poll status endpoint with auto-refresh
+- [x] Progress indicator
+- [x] List NDJSON files from output
+- [x] Preview first N rows with NDJSON parser
+- [x] File download links (via preview)
 
 ## Phase 7: Metrics Dashboard (`/metrics`)
-- [ ] Mock event aggregation client-side
-- [ ] Latency line chart (Recharts)
-- [ ] Outcome pie chart (approve/pend/deny)
-- [ ] Service type bar chart
-- [ ] Date range selector
+- [x] Mock event aggregation client-side
+- [x] Latency line chart (Recharts)
+- [x] Outcome pie chart (approve/pend/deny)
+- [x] Outcome bar chart
+- [x] Summary cards (total, approved, pended, denied, avg latency)
+- [x] Event log table with add/clear controls
 
 ## Phase 8: Polish
-- [ ] Error handling across all pages
-- [ ] Nice OperationOutcome cards
-- [ ] Loading states and skeletons
-- [ ] Responsive design (desktop/tablet)
-- [ ] README quickstart
-- [ ] Seed examples
+- [x] Error handling across all pages (try-catch with OperationOutcome)
+- [x] Nice OperationOutcome cards (severity-based rendering)
+- [x] Loading states (disabled buttons, loading text)
+- [x] Responsive design (desktop/tablet with grid layouts)
+- [ ] README quickstart with demo script
+- [x] Seed examples (pas-approve/pend/deny, cds-order-select/sign)
 
 ## Phase 9: Deployment
 - [ ] Vercel project setup
 - [ ] Environment variables
-- [ ] CI lint/build check
+- [ ] CI lint/build check (typecheck, build, lint)
 - [ ] Deploy preview
 - [ ] Production deployment
