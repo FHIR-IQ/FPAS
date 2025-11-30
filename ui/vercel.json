@@ -2,11 +2,11 @@
   "rewrites": [
     {
       "source": "/api/fhir/:path*",
-      "destination": "https://fpas-phi.vercel.app/fhir/:path*"
+      "destination": "https://fpas-aks129s-projects.vercel.app/fhir/:path*"
     },
     {
       "source": "/api/cds-services/:path*",
-      "destination": "https://fpas-phi.vercel.app/cds-services/:path*"
+      "destination": "https://fpas-aks129s-projects.vercel.app/cds-services/:path*"
     }
   ],
   "headers": [
