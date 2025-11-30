@@ -24,6 +24,22 @@ async function getApp() {
 }
 
 /**
+ * Read raw body from request stream
+ */
+async function getRawBody(req: VercelRequest): Promise<string> {
+  return new Promise((resolve, reject) => {
+    let data = '';
+    req.on('data', (chunk) => {
+      data += chunk;
+    });
+    req.on('end', () => {
+      resolve(data);
+    });
+    req.on('error', reject);
+  });
+}
+
+/**
  * Vercel serverless handler
  */
 export default async function handler(req: VercelRequest, res: VercelResponse) {
@@ -31,15 +47,30 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     const fastifyApp = await getApp();
 
     console.log('[Vercel Handler] Request:', req.method, req.url);
-    console.log('[Vercel Handler] Body type:', typeof req.body);
-    console.log('[Vercel Handler] Body preview:', JSON.stringify(req.body)?.substring(0, 200));
+
+    // Get the body - either from req.body (if pre-parsed) or from raw stream
+    let payload: any = req.body;
+    if (payload === undefined && req.method !== 'GET' && req.method !== 'HEAD') {
+      const rawBody = await getRawBody(req);
+      console.log('[Vercel Handler] Raw body length:', rawBody.length);
+      if (rawBody) {
+        try {
+          payload = JSON.parse(rawBody);
+        } catch {
+          payload = rawBody;
+        }
+      }
+    }
+
+    console.log('[Vercel Handler] Body type:', typeof payload);
+    console.log('[Vercel Handler] Body preview:', JSON.stringify(payload)?.substring(0, 200));
 
     // Use Fastify's inject method for serverless compatibility
     const response = await fastifyApp.inject({
       method: req.method as any,
       url: req.url || '/',
       headers: req.headers as any,
-      payload: req.body,
+      payload: payload,
       query: req.query as any
     });
 
@@ -67,3 +98,10 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     });
   }
 }
+
+// Disable body parsing to handle it manually
+export const config = {
+  api: {
+    bodyParser: false,
+  },
+};
