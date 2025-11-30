@@ -94,16 +94,33 @@ export default function Home() {
         })}
       </div>
 
-      <div className="mt-12 p-6 bg-blue-50 rounded-lg border border-blue-200">
-        <h2 className="text-lg font-semibold text-blue-900 mb-2">
+      <div className="mt-12 p-8 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl border border-blue-100 shadow-sm">
+        <h2 className="text-xl font-bold text-blue-900 mb-4 flex items-center gap-2">
+          <span className="p-2 bg-blue-100 rounded-lg">🚀</span>
           Getting Started
         </h2>
-        <ul className="space-y-2 text-sm text-blue-800">
-          <li>• Select a feature above to begin testing</li>
-          <li>• Use the token switcher in the sidebar to change authorization scope</li>
-          <li>• Pre-filled examples are provided for quick testing</li>
-          <li>• All requests are sent directly to the live FPAS API</li>
-        </ul>
+        <div className="grid md:grid-cols-2 gap-6">
+          <div className="space-y-4">
+            <div className="flex gap-3">
+              <div className="flex-shrink-0 w-6 h-6 rounded-full bg-blue-200 text-blue-700 flex items-center justify-center text-sm font-bold">1</div>
+              <p className="text-blue-800">Select a feature from the cards above to begin testing specific workflows.</p>
+            </div>
+            <div className="flex gap-3">
+              <div className="flex-shrink-0 w-6 h-6 rounded-full bg-blue-200 text-blue-700 flex items-center justify-center text-sm font-bold">2</div>
+              <p className="text-blue-800">Use the token switcher in the sidebar to change authorization scopes and test different user roles.</p>
+            </div>
+          </div>
+          <div className="space-y-4">
+            <div className="flex gap-3">
+              <div className="flex-shrink-0 w-6 h-6 rounded-full bg-blue-200 text-blue-700 flex items-center justify-center text-sm font-bold">3</div>
+              <p className="text-blue-800">Use the provided pre-filled examples for quick testing or modify the JSON directly.</p>
+            </div>
+            <div className="flex gap-3">
+              <div className="flex-shrink-0 w-6 h-6 rounded-full bg-blue-200 text-blue-700 flex items-center justify-center text-sm font-bold">4</div>
+              <p className="text-blue-800">All requests are sent directly to the live FPAS API, so you can see real-time results.</p>
+            </div>
+          </div>
+        </div>
       </div>
 
       <div className="mt-8 flex items-center gap-4 text-sm text-gray-500">

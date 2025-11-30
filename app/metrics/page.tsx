@@ -91,7 +91,8 @@ const mockEvents: MetricEvent[] = [
 ];
 
 export default function MetricsPage() {
-  const [events, setEvents] = useState<MetricEvent[]>(mockEvents);
+  const [events, setEvents] = useState<MetricEvent[]>([]);
+  const [isLoaded, setIsLoaded] = useState(false);
   const [approved, setApproved] = useState(0);
   const [pended, setPended] = useState(0);
   const [denied, setDenied] = useState(0);
@@ -99,9 +100,32 @@ export default function MetricsPage() {
   const [latencyData, setLatencyData] = useState<Array<{ ts: number; ms: number }>>([]);
 
   useEffect(() => {
-    calculateMetrics();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [events]);
+    const saved = localStorage.getItem("fpas_metrics_events");
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved);
+        // Restore Date objects
+        const restored = parsed.map((e: any) => ({
+          ...e,
+          timestamp: new Date(e.timestamp),
+        }));
+        setEvents(restored);
+      } catch (e) {
+        console.error("Failed to parse saved metrics", e);
+        setEvents(mockEvents);
+      }
+    } else {
+      setEvents(mockEvents);
+    }
+    setIsLoaded(true);
+  }, []);
+
+  useEffect(() => {
+    if (isLoaded) {
+      localStorage.setItem("fpas_metrics_events", JSON.stringify(events));
+      calculateMetrics();
+    }
+  }, [events, isLoaded]);
 
   const calculateMetrics = () => {
     const approvedCount = events.filter((e) => e.outcome === "approved").length;
@@ -143,6 +167,10 @@ export default function MetricsPage() {
 
   const handleClearEvents = () => {
     setEvents([]);
+  };
+
+  const handleResetDefaults = () => {
+    setEvents(mockEvents);
   };
 
   const totalRequests = approved + pended + denied;
@@ -243,6 +271,12 @@ export default function MetricsPage() {
             >
               Clear All
             </button>
+            <button
+              onClick={handleResetDefaults}
+              className="px-4 py-2 bg-gray-600 text-white text-sm rounded-lg hover:bg-gray-700 transition-colors"
+            >
+              Reset Defaults
+            </button>
           </div>
         </div>
 
@@ -286,13 +320,12 @@ export default function MetricsPage() {
                     </td>
                     <td className="px-4 py-3 whitespace-nowrap">
                       <span
-                        className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
-                          event.outcome === "approved"
+                        className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${event.outcome === "approved"
                             ? "bg-green-100 text-green-800"
                             : event.outcome === "pended"
-                            ? "bg-yellow-100 text-yellow-800"
-                            : "bg-red-100 text-red-800"
-                        }`}
+                              ? "bg-yellow-100 text-yellow-800"
+                              : "bg-red-100 text-red-800"
+                          }`}
                       >
                         {event.outcome}
                       </span>
