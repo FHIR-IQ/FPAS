@@ -66,7 +66,7 @@ export async function authMiddleware(app: FastifyInstance) {
     // POC Demo Mode: Always set mock user for ALL requests
     const pocDemoMode = process.env.POC_DEMO_MODE === 'true';
 
-    logger.debug('Auth middleware check', {
+    logger.info('Auth middleware check', {
       url: request.url,
       pocDemoMode,
       envVar: process.env.POC_DEMO_MODE
@@ -79,7 +79,7 @@ export async function authMiddleware(app: FastifyInstance) {
         practitioner: 'Practitioner/demo-practitioner',
         organization: 'Organization/demo-org'
       };
-      logger.debug('POC Demo Mode: Mock user set for request', { url: request.url });
+      logger.info('POC Demo Mode: Mock user set for request', { url: request.url });
       return;
     }
 
