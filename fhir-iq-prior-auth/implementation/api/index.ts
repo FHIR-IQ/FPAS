@@ -6,6 +6,7 @@
 
 import { VercelRequest, VercelResponse } from '@vercel/node';
 import { buildApp } from '../src/app';
+import getRawBody from 'raw-body';
 
 let app: any;
 
@@ -24,22 +25,6 @@ async function getApp() {
 }
 
 /**
- * Read raw body from request stream
- */
-async function getRawBody(req: VercelRequest): Promise<string> {
-  return new Promise((resolve, reject) => {
-    let data = '';
-    req.on('data', (chunk) => {
-      data += chunk;
-    });
-    req.on('end', () => {
-      resolve(data);
-    });
-    req.on('error', reject);
-  });
-}
-
-/**
  * Vercel serverless handler
  */
 export default async function handler(req: VercelRequest, res: VercelResponse) {
@@ -47,23 +32,37 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     const fastifyApp = await getApp();
 
     console.log('[Vercel Handler] Request:', req.method, req.url);
+    console.log('[Vercel Handler] Content-Type:', req.headers['content-type']);
 
-    // Get the body - either from req.body (if pre-parsed) or from raw stream
-    let payload: any = req.body;
-    if (payload === undefined && req.method !== 'GET' && req.method !== 'HEAD') {
-      const rawBody = await getRawBody(req);
-      console.log('[Vercel Handler] Raw body length:', rawBody.length);
-      if (rawBody) {
+    // Get the payload - Vercel parses application/json but not application/fhir+json
+    let payload: string | undefined;
+
+    if (req.method !== 'GET' && req.method !== 'HEAD') {
+      if (req.body && typeof req.body === 'object') {
+        // Vercel already parsed the body (for application/json)
+        payload = JSON.stringify(req.body);
+        console.log('[Vercel Handler] Using pre-parsed body');
+      } else if (req.body && typeof req.body === 'string') {
+        // Body is already a string
+        payload = req.body;
+        console.log('[Vercel Handler] Using string body');
+      } else {
+        // Need to read raw body (for application/fhir+json)
         try {
-          payload = JSON.parse(rawBody);
-        } catch {
+          const rawBody = await getRawBody(req, {
+            length: req.headers['content-length'],
+            limit: '10mb',
+            encoding: 'utf-8'
+          });
           payload = rawBody;
+          console.log('[Vercel Handler] Read raw body, length:', rawBody.length);
+        } catch (err) {
+          console.log('[Vercel Handler] Failed to read raw body:', err);
         }
       }
     }
 
-    console.log('[Vercel Handler] Body type:', typeof payload);
-    console.log('[Vercel Handler] Body preview:', JSON.stringify(payload)?.substring(0, 200));
+    console.log('[Vercel Handler] Payload preview:', payload?.substring(0, 200));
 
     // Use Fastify's inject method for serverless compatibility
     const response = await fastifyApp.inject({
@@ -99,7 +98,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   }
 }
 
-// Disable body parsing to handle it manually
+// Disable Vercel's body parser to handle FHIR content types manually
 export const config = {
   api: {
     bodyParser: false,
