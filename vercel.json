@@ -1,17 +1,8 @@
 {
   "version": 2,
-  "buildCommand": "cd fhir-iq-prior-auth/implementation && npm install && npm run build",
-  "installCommand": "cd fhir-iq-prior-auth/implementation && npm install",
-  "builds": [
-    {
-      "src": "fhir-iq-prior-auth/implementation/api/index.ts",
-      "use": "@vercel/node"
-    }
-  ],
-  "routes": [
-    {
-      "src": "/(.*)",
-      "dest": "fhir-iq-prior-auth/implementation/api/index.ts"
-    }
-  ]
+  "framework": "nextjs",
+  "installCommand": "cd ui && npm install",
+  "buildCommand": "cd ui && npm run build",
+  "outputDirectory": "ui/.next",
+  "devCommand": "cd ui && npm run dev"
 }
