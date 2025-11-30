@@ -214,19 +214,28 @@ export function requireAuth(requiredScopes?: string[]) {
  * Check if endpoint is public (no auth required)
  */
 function isPublicEndpoint(url: string): boolean {
+  // Strip query parameters for matching
+  const urlPath = url.split('?')[0];
+
+  // POC Demo Mode: Allow all endpoints without authentication
+  // In production, this should be restricted to specific public endpoints
+  const pocDemoMode = process.env.POC_DEMO_MODE !== 'false';
+
+  if (pocDemoMode) {
+    logger.debug('POC Demo Mode: Bypassing auth for all endpoints', { url, urlPath });
+    return true;
+  }
+
   const publicEndpoints = [
     '/health',
     '/metadata',
     '/docs',
     '/openapi',
     '/.well-known',
-    '/oauth2/token', // Token endpoint itself is public
-    '/fhir', // FHIR endpoints - auth bypassed for POC demo
-    '/Claim', // Direct Claim endpoints for POC demo
-    '/cds-services' // CDS Hooks endpoints for POC demo
+    '/oauth2/token'
   ];
 
-  return publicEndpoints.some(endpoint => url.startsWith(endpoint));
+  return publicEndpoints.some(endpoint => urlPath.startsWith(endpoint));
 }
 
 /**
