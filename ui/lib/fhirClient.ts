@@ -24,8 +24,8 @@ export async function fhirFetch<T = any>(
   const url = path.startsWith('http') ? path : `${config.fhirBase}${path}`;
 
   const headers = new Headers(fetchInit.headers);
-  headers.set('Accept', 'application/fhir+json');
-  headers.set('Content-Type', 'application/fhir+json');
+  headers.set('Accept', 'application/json');
+  headers.set('Content-Type', 'application/json');
 
   if (token) {
     headers.set('Authorization', `Bearer ${token}`);
@@ -80,8 +80,8 @@ export function buildCurlCommand(
   const url = path.startsWith('http') ? path : `${config.fhirBase}${path}`;
 
   let curl = `curl -X ${method} '${url}'`;
-  curl += ` \\\n  -H 'Accept: application/fhir+json'`;
-  curl += ` \\\n  -H 'Content-Type: application/fhir+json'`;
+  curl += ` \\\n  -H 'Accept: application/json'`;
+  curl += ` \\\n  -H 'Content-Type: application/json'`;
 
   if (token) {
     curl += ` \\\n  -H 'Authorization: Bearer ${token}'`;
