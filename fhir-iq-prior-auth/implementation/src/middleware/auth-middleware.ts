@@ -63,8 +63,14 @@ export async function authMiddleware(app: FastifyInstance) {
 
   // Add auth hooks
   app.addHook('onRequest', async (request, reply) => {
-    // Skip auth for public endpoints
+    // POC Demo Mode: Set mock user for all requests
     if (isPublicEndpoint(request.url)) {
+      request.user = {
+        sub: 'demo-user',
+        scopes: ['system/*.read', 'system/*.write', 'user/*.read', 'user/*.write'],
+        practitioner: 'Practitioner/demo-practitioner',
+        organization: 'Organization/demo-org'
+      };
       return;
     }
 
