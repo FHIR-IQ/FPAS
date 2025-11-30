@@ -1,0 +1,36 @@
+{
+  "hook": "order-sign",
+  "hookInstance": "a2c8d9e1-4f5b-6c7d-8e9f-0a1b2c3d4e5f",
+  "fhirServer": "https://fpas-phi.vercel.app/fhir",
+  "context": {
+    "userId": "Practitioner/pract-001",
+    "patientId": "Patient/pat-001",
+    "encounterId": "Encounter/enc-001",
+    "draftOrders": {
+      "resourceType": "Bundle",
+      "entry": [
+        {
+          "resource": {
+            "resourceType": "ServiceRequest",
+            "id": "sign-service",
+            "status": "draft",
+            "intent": "order",
+            "code": {
+              "coding": [
+                {
+                  "system": "http://www.ama-assn.org/go/cpt",
+                  "code": "93306",
+                  "display": "Echocardiography, transthoracic"
+                }
+              ]
+            },
+            "subject": {
+              "reference": "Patient/pat-001"
+            },
+            "authoredOn": "2024-01-15T14:30:00Z"
+          }
+        }
+      ]
+    }
+  }
+}
