@@ -63,14 +63,28 @@ export async function authMiddleware(app: FastifyInstance) {
 
   // Add auth hooks
   app.addHook('onRequest', async (request, reply) => {
-    // POC Demo Mode: Set mock user for all requests
-    if (isPublicEndpoint(request.url)) {
+    // POC Demo Mode: Always set mock user for ALL requests
+    const pocDemoMode = process.env.POC_DEMO_MODE === 'true';
+
+    logger.debug('Auth middleware check', {
+      url: request.url,
+      pocDemoMode,
+      envVar: process.env.POC_DEMO_MODE
+    });
+
+    if (pocDemoMode) {
       request.user = {
         sub: 'demo-user',
         scopes: ['system/*.read', 'system/*.write', 'user/*.read', 'user/*.write'],
         practitioner: 'Practitioner/demo-practitioner',
         organization: 'Organization/demo-org'
       };
+      logger.debug('POC Demo Mode: Mock user set for request', { url: request.url });
+      return;
+    }
+
+    // Skip auth for public endpoints in non-demo mode
+    if (isPublicEndpoint(request.url)) {
       return;
     }
 
@@ -97,15 +111,17 @@ export async function authMiddleware(app: FastifyInstance) {
 export function requireAuth(requiredScopes?: string[]) {
   return async function(request: FastifyRequest, reply: FastifyReply) {
     try {
-      // POC Demo: Skip auth for public endpoints
-      if (isPublicEndpoint(request.url)) {
-        // Create a mock user context for demo purposes
-        request.user = {
-          sub: 'demo-user',
-          scopes: ['system/*.read', 'system/*.write', 'user/*.read', 'user/*.write'],
-          practitioner: 'Practitioner/demo-practitioner',
-          organization: 'Organization/demo-org'
-        };
+      // POC Demo Mode: Always allow access with mock user
+      const pocDemoMode = process.env.POC_DEMO_MODE === 'true';
+      if (pocDemoMode) {
+        if (!request.user) {
+          request.user = {
+            sub: 'demo-user',
+            scopes: ['system/*.read', 'system/*.write', 'user/*.read', 'user/*.write'],
+            practitioner: 'Practitioner/demo-practitioner',
+            organization: 'Organization/demo-org'
+          };
+        }
         return;
       }
 
