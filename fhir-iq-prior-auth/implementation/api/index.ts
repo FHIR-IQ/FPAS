@@ -9,6 +9,9 @@ import { buildApp } from '../src/app';
 
 let app: any;
 
+// POC Demo Mode - set environment variable
+process.env.POC_DEMO_MODE = 'true';
+
 /**
  * Initialize app on cold start
  */
@@ -27,6 +30,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   try {
     const fastifyApp = await getApp();
 
+    console.log('[Vercel Handler] Request:', req.method, req.url);
+
     // Use Fastify's inject method for serverless compatibility
     const response = await fastifyApp.inject({
       method: req.method as any,
@@ -35,6 +40,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       payload: req.body,
       query: req.query as any
     });
+
+    console.log('[Vercel Handler] Response status:', response.statusCode);
 
     // Set response headers
     Object.keys(response.headers).forEach(key => {
