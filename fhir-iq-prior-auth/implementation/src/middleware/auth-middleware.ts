@@ -91,6 +91,18 @@ export async function authMiddleware(app: FastifyInstance) {
 export function requireAuth(requiredScopes?: string[]) {
   return async function(request: FastifyRequest, reply: FastifyReply) {
     try {
+      // POC Demo: Skip auth for public endpoints
+      if (isPublicEndpoint(request.url)) {
+        // Create a mock user context for demo purposes
+        request.user = {
+          sub: 'demo-user',
+          scopes: ['system/*.read', 'system/*.write', 'user/*.read', 'user/*.write'],
+          practitioner: 'Practitioner/demo-practitioner',
+          organization: 'Organization/demo-org'
+        };
+        return;
+      }
+
       // Check if user is authenticated
       if (!request.user) {
         logger.warn('Unauthorized request - no authentication', {
@@ -208,7 +220,10 @@ function isPublicEndpoint(url: string): boolean {
     '/docs',
     '/openapi',
     '/.well-known',
-    '/oauth2/token' // Token endpoint itself is public
+    '/oauth2/token', // Token endpoint itself is public
+    '/fhir', // FHIR endpoints - auth bypassed for POC demo
+    '/Claim', // Direct Claim endpoints for POC demo
+    '/cds-services' // CDS Hooks endpoints for POC demo
   ];
 
   return publicEndpoints.some(endpoint => url.startsWith(endpoint));
