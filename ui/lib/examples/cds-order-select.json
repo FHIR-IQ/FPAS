@@ -1,0 +1,35 @@
+{
+  "hook": "order-select",
+  "hookInstance": "d1577c69-dfbe-44ad-ba6d-3e05e953b2ea",
+  "fhirServer": "https://fpas-phi.vercel.app/fhir",
+  "context": {
+    "userId": "Practitioner/pract-001",
+    "patientId": "Patient/pat-001",
+    "encounterId": "Encounter/enc-001",
+    "draftOrders": {
+      "resourceType": "Bundle",
+      "entry": [
+        {
+          "resource": {
+            "resourceType": "ServiceRequest",
+            "id": "example-service",
+            "status": "draft",
+            "intent": "order",
+            "code": {
+              "coding": [
+                {
+                  "system": "http://www.ama-assn.org/go/cpt",
+                  "code": "72148",
+                  "display": "MRI Lumbar Spine"
+                }
+              ]
+            },
+            "subject": {
+              "reference": "Patient/pat-001"
+            }
+          }
+        }
+      ]
+    }
+  }
+}
