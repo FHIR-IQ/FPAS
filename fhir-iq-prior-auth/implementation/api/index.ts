@@ -31,6 +31,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     const fastifyApp = await getApp();
 
     console.log('[Vercel Handler] Request:', req.method, req.url);
+    console.log('[Vercel Handler] Body type:', typeof req.body);
+    console.log('[Vercel Handler] Body preview:', JSON.stringify(req.body)?.substring(0, 200));
 
     // Use Fastify's inject method for serverless compatibility
     const response = await fastifyApp.inject({
@@ -42,6 +44,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     });
 
     console.log('[Vercel Handler] Response status:', response.statusCode);
+    if (response.statusCode >= 400) {
+      console.log('[Vercel Handler] Error response:', response.body?.substring(0, 500));
+    }
 
     // Set response headers
     Object.keys(response.headers).forEach(key => {
