@@ -32,9 +32,15 @@ export async function fhirFetch<T = any>(
   }
 
   // Stringify body if it's an object
-  const requestBody = body && typeof body === 'object' ? JSON.stringify(body) : body;
+  let requestBody: string | undefined;
+  if (body) {
+    requestBody = typeof body === 'string' ? body : JSON.stringify(body);
+    console.log('[fhirFetch] Request body type:', typeof requestBody);
+    console.log('[fhirFetch] Request body preview:', requestBody.substring(0, 200));
+  }
 
   try {
+    console.log('[fhirFetch] Fetching:', url, fetchInit.method || 'GET');
     const response = await fetch(url, {
       ...fetchInit,
       headers,
@@ -82,7 +88,7 @@ export function buildCurlCommand(
   }
 
   if (body) {
-    const bodyStr = typeof body === 'string' ? body : JSON.stringify(JSON.parse(body as string), null, 2);
+    const bodyStr = typeof body === 'string' ? body : JSON.stringify(body, null, 2);
     curl += ` \\\n  -d '${bodyStr}'`;
   }
 
