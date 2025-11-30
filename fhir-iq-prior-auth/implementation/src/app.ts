@@ -32,6 +32,16 @@ export async function buildApp() {
     maxRequestsPerSocket: config.performance.maxRequestsPerSocket,
   }).withTypeProvider<TypeBoxTypeProvider>();
 
+  // Register FHIR content type parser (application/fhir+json)
+  app.addContentTypeParser('application/fhir+json', { parseAs: 'string' }, (req, body, done) => {
+    try {
+      const json = JSON.parse(body as string);
+      done(null, json);
+    } catch (err) {
+      done(err as Error, undefined);
+    }
+  });
+
   // Register security plugins
   await app.register(helmet, {
     global: config.security.helmet.enabled,
