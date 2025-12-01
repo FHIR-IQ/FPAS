@@ -6,7 +6,6 @@
 
 import { VercelRequest, VercelResponse } from '@vercel/node';
 import { buildApp } from '../src/app';
-import getRawBody from 'raw-body';
 
 let app: any;
 
@@ -32,37 +31,10 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     const fastifyApp = await getApp();
 
     console.log('[Vercel Handler] Request:', req.method, req.url);
-    console.log('[Vercel Handler] Content-Type:', req.headers['content-type']);
 
-    // Get the payload - Vercel parses application/json but not application/fhir+json
-    let payload: string | undefined;
-
-    if (req.method !== 'GET' && req.method !== 'HEAD') {
-      if (req.body && typeof req.body === 'object') {
-        // Vercel already parsed the body (for application/json)
-        payload = JSON.stringify(req.body);
-        console.log('[Vercel Handler] Using pre-parsed body');
-      } else if (req.body && typeof req.body === 'string') {
-        // Body is already a string
-        payload = req.body;
-        console.log('[Vercel Handler] Using string body');
-      } else {
-        // Need to read raw body (for application/fhir+json)
-        try {
-          const rawBody = await getRawBody(req, {
-            length: req.headers['content-length'],
-            limit: '10mb',
-            encoding: 'utf-8'
-          });
-          payload = rawBody;
-          console.log('[Vercel Handler] Read raw body, length:', rawBody.length);
-        } catch (err) {
-          console.log('[Vercel Handler] Failed to read raw body:', err);
-        }
-      }
-    }
-
-    console.log('[Vercel Handler] Payload preview:', payload?.substring(0, 200));
+    // Vercel parses application/json automatically, stringify for Fastify inject
+    const payload = req.body ? JSON.stringify(req.body) : undefined;
+    console.log('[Vercel Handler] Body present:', !!req.body);
 
     // Use Fastify's inject method for serverless compatibility
     const response = await fastifyApp.inject({
@@ -98,9 +70,11 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   }
 }
 
-// Disable Vercel's body parser to handle FHIR content types manually
+// Enable Vercel's body parser for application/json
 export const config = {
   api: {
-    bodyParser: false,
+    bodyParser: {
+      sizeLimit: '10mb',
+    },
   },
 };
